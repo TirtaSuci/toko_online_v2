@@ -30,7 +30,7 @@ export async function retriveDataById(collectionName: string, id: string) {
 
 export async function signUp(
   userData: { email: string; fullname: string; password: string; role: string },
-  callback: Function
+  callback: (success: boolean) => void
 ) {
   const q = query(
     collection(firestore, "users"),
