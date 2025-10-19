@@ -1,13 +1,17 @@
 import Link from "next/link";
 import style from "./Register.module.scss";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
 
 const RegisterView = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const { push } = useRouter();
 
   const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true);
+    setError("");
     const form = event.target as HTMLFormElement;
     const data = {
       fullname: form.fullname.value,
@@ -25,15 +29,18 @@ const RegisterView = () => {
 
     if (result.status === 200) {
       form.reset();
+      setIsLoading(false);
+      alert("Registration successful. Please login.");
       push("/auth/login");
     } else {
-      alert("Registration failed. Please try again.");
+      setError("Registration failed. Please try again.");
     }
   };
 
   return (
     <div className={style.register}>
       <div className={style.register__label}>Register View</div>
+      {error && <p className={style.register__error}>{error}</p>}
       <form onSubmit={handleRegister}>
         <div className={style.register__form}>
           <div className={style.register__form__item}>
@@ -64,7 +71,7 @@ const RegisterView = () => {
             />
           </div>
           <button type="submit" className={style.register__form__button}>
-            Register
+            {isLoading ? "Loading..." : "Register"}
           </button>
         </div>
       </form>

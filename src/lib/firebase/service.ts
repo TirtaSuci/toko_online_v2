@@ -66,7 +66,9 @@ export async function SignIn(email: string) {
     id: doc.id,
     ...doc.data(),
   }));
-  if (data.length === 0) {
+  if (data) {
+    return data[0];
+  } else {
     return null;
   }
 }

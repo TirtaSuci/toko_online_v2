@@ -13,8 +13,8 @@ const authOptions: NextAuthOptions = {
       type: `credentials`,
       name: `Credentials`,
       credentials: {
-        email: { label: `Email`, type: `email` },
-        password: { label: `Password`, type: `password` },
+        email: { label: `email`, type: `email` },
+        password: { label: `password`, type: `password` },
       },
       authorize: async (credentials) => {
         const { email, password } = credentials as {
@@ -22,6 +22,7 @@ const authOptions: NextAuthOptions = {
           password: string;
         };
         const user: any = await SignIn(email);
+        console.log("🔥 User fetched from Firestore:", user);
         if (user) {
           const isPasswordValid = await compare(password, user.password);
           if (isPasswordValid) {
@@ -36,7 +37,7 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, account, profile, user }: any) {
+    async jwt({ token, account, user }: any) {
       if (account?.provider === "credentials") {
         token.email = user.email;
         token.fullname = user.fullname;

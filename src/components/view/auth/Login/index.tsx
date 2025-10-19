@@ -1,40 +1,48 @@
 import Link from "next/link";
-import style from "./Register.module.scss";
-import { FormEvent } from "react";
+import style from "./Login.module.scss";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
 
 const LoginView = () => {
-  const { push } = useRouter();
+  const [isLoading, setIsloading] = useState(false);
+  const [error, setError] = useState("");
+  const { push, query } = useRouter();
 
-  const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
+  const callbackUrl: any = query.callbackUrl || "/";
+
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsloading(true);
+    setError("");
     const form = event.target as HTMLFormElement;
-    const data = {
-      fullname: form.fullname.value,
-      email: form.email.value,
-      password: form.password.value,
-    };
-
-    const result = await fetch("/api/user/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (result.status === 200) {
-      form.reset();
-      push("/auth/login");
-    } else {
-      alert("Registration failed. Please try again.");
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: form.email.value,
+        password: form.password.value,
+        callbackUrl,
+      });
+      if (!res?.error) {
+        setIsloading(false);
+        form.reset();
+        push(callbackUrl);
+      } else {
+        setIsloading(false);
+        setError("Invalid email or password");
+      }
+    } catch (err) {
+      console.error(err);
+      setIsloading(false);
+      setError("Something went wrong. Please try again.");
     }
   };
 
   return (
     <div className={style.login}>
       <div className={style.login__label}>Login View</div>
-      <form onSubmit={handleRegister}>
+      {error && <p className={style.login__error}>{error}</p>}
+      <form onSubmit={handleLogin}>
         <div className={style.login__form}>
           <div className={style.login__form__item}>
             <label htmlFor="email">Email</label>
@@ -55,12 +63,13 @@ const LoginView = () => {
             />
           </div>
           <button type="submit" className={style.login__form__button}>
-            Login
+            {isLoading ? "Loading..." : "Login"}
           </button>
         </div>
       </form>
       <p className={style.login__link}>
-        Dont have an account ? <Link href="/auth/login">Register</Link>{" "}
+        Don{"`"}t have an account ? Sign Up{" "}
+        <Link href="/auth/register">Here</Link>{" "}
       </p>
     </div>
   );
