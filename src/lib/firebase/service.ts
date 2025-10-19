@@ -58,3 +58,15 @@ export async function signUp(
       });
   }
 }
+
+export async function SignIn(email: string) {
+  const q = query(collection(firestore, "users"), where("email", "==", email));
+  const snapshot = await getDocs(q);
+  const data = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  if (data.length === 0) {
+    return null;
+  }
+}
