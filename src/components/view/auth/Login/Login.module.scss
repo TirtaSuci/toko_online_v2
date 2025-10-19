@@ -1,55 +1,7 @@
 .login {
   display: flex;
   align-items: center;
-  justify-conten.register {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-
-    &__label {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-
-    &__form {
-      width: 300px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      border: 1px solid;
-      padding: 20px;
-      box-shadow: 5px 10px;
-      margin-bottom: 20px;
-      &__item {
-        display: flex;
-        flex-direction: column;
-        border: none;
-      }
-      &__input {
-        border: none;
-        background-color: #cfcfcf;
-        height: 25px;
-      }
-      &__button {
-        margin-top: 10px;
-        height: 30px;
-        background-color: black;
-        color: white;
-        border: none;
-      }
-    }
-    &__link {
-      a {
-        color: blue;
-        text-decoration: underline;
-        cursor: pointer;
-      }
-    }
-  }
-  t: center;
+  justify-content: center;
   flex-direction: column;
   height: 100vh;
   width: 100vw;
