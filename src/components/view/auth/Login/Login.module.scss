@@ -12,7 +12,7 @@
   }
 
   &__form {
-    width: 300px;
+    width: 400px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -24,6 +24,7 @@
       display: flex;
       flex-direction: column;
       border: none;
+      gap: 5px;
     }
     &__input {
       border: none;
@@ -31,11 +32,30 @@
       height: 25px;
     }
     &__button {
+      font-weight: bolder;
+      font-size: 15px;
       margin-top: 10px;
       height: 30px;
       background-color: black;
       color: white;
       border: none;
+    }
+    &__google {
+      font-weight: bolder;
+      font-size: 15px;
+      margin-top: 10px;
+      height: 30px;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+
+      i {
+        font-size: 20px;
+      }
     }
   }
   &__link {
