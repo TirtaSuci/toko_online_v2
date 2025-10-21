@@ -2,6 +2,8 @@ import Link from "next/link";
 import style from "./Register.module.scss";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
+import Input from "@/components/layouts/UI/Input";
+import Button from "@/components/layouts/UI/Button";
 
 const RegisterView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +19,14 @@ const RegisterView = () => {
       fullname: form.fullname.value,
       email: form.email.value,
       password: form.password.value,
+      confirmPassword: form.confirmPassword.value,
     };
+
+    if (data.password !== data.confirmPassword) {
+      setError("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
 
     const result = await fetch("/api/user/register", {
       method: "POST",
@@ -33,7 +42,8 @@ const RegisterView = () => {
       alert("Registration successful. Please login.");
       push("/auth/login");
     } else {
-      setError("Registration failed. Please try again.");
+      setError("Email already exists.");
+      setIsLoading(false);
     }
   };
 
@@ -43,36 +53,17 @@ const RegisterView = () => {
       {error && <p className={style.register__error}>{error}</p>}
       <form onSubmit={handleRegister}>
         <div className={style.register__form}>
-          <div className={style.register__form__item}>
-            <label htmlFor="fullname">Full Name</label>
-            <input
-              className={style.register__form__input}
-              name="fullname"
-              id="fullname"
-              type="text"
-            />
-          </div>
-          <div className={style.register__form__item}>
-            <label htmlFor="email">Email</label>
-            <input
-              className={style.register__form__input}
-              name="email"
-              id="email"
-              type="email"
-            />
-          </div>
-          <div className={style.register__form__item}>
-            <label htmlFor="password">Password</label>
-            <input
-              className={style.register__form__input}
-              name="password"
-              id="password"
-              type="password"
-            />
-          </div>
-          <button type="submit" className={style.register__form__button}>
+          <Input label="Fullname" name="fullname"></Input>
+          <Input label="Email" name="email"></Input>
+          <Input label="Password" name="password" type="password"></Input>
+          <Input
+            label="Confirm Password"
+            name="confirmPassword"
+            type="password"
+          ></Input>
+          <Button type="submit" className={style.register__button}>
             {isLoading ? "Loading..." : "Register"}
-          </button>
+          </Button>
         </div>
       </form>
       <p className={style.register__link}>

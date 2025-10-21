@@ -15,34 +15,26 @@
     width: 400px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
     border: 1px solid;
     padding: 20px;
     box-shadow: 5px 10px;
     margin-bottom: 20px;
-    &__item {
-      display: flex;
-      flex-direction: column;
-      border: none;
-      gap: 5px;
-    }
-    &__input {
-      border: none;
-      background-color: #cfcfcf;
-      height: 25px;
-    }
-    &__google {
-      font-weight: bolder;
-      font-size: 15px;
+
+    &__divider {
+      text-align: center;
       margin-top: 10px;
-      height: 30px;
-      background-color: #4285f4;
-      color: white;
-      border: none;
+      margin-bottom: 10px;
+    }
+
+    &__button {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    &__google {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
 
       i {
         font-size: 20px;

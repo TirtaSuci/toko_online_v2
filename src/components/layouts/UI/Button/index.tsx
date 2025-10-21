@@ -9,12 +9,12 @@ type PropsType = {
 };
 
 const Button = (props: PropsType) => {
-  const { type, onClick, children, className, variant = "primariy" } = props;
+  const { type, onClick, children, className, variant = "primary" } = props;
   return (
     <button
       type={type || "button"}
       onClick={onClick}
-      className={`${style.button} ${className} ${style[variant]}, ${className}`}
+      className={`${style.button} ${style[variant]} ${className}`}
     >
       {children}
     </button>

@@ -5,14 +5,17 @@
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-
+  &__error {
+    color: red;
+    margin-bottom: 10px;
+  }
   &__label {
     font-size: 24px;
     margin-bottom: 20px;
   }
 
   &__form {
-    width: 300px;
+    width: 400px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -20,24 +23,12 @@
     padding: 20px;
     box-shadow: 5px 10px;
     margin-bottom: 20px;
-    &__item {
-      display: flex;
-      flex-direction: column;
-      border: none;
-    }
-    &__input {
-      border: none;
-      background-color: #cfcfcf;
-      height: 25px;
-    }
-    &__button {
-      margin-top: 10px;
-      height: 30px;
-      background-color: black;
-      color: white;
-      border: none;
-    }
   }
+
+  &__button {
+    margin-top: 10px;
+  }
+
   &__link {
     a {
       color: blue;

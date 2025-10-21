@@ -30,7 +30,7 @@ export async function retriveDataById(collectionName: string, id: string) {
 
 export async function signUp(
   userData: { email: string; fullname: string; password: string; role: string },
-  callback: (success: boolean) => void
+  callback: (success: boolean, message?: string) => void
 ) {
   const q = query(
     collection(firestore, "users"),
@@ -50,11 +50,10 @@ export async function signUp(
     userData.password = await bcrypt.hash(userData.password, 10);
     await addDoc(collection(firestore, "users"), userData)
       .then(() => {
-        callback(true);
+        callback(true, "Registration Berhasil.");
       })
-      .catch((error) => {
-        console.error("Error adding document: ", error);
-        callback(false);
+      .catch(() => {
+        callback(false, "Registration Gagal.");
       });
   }
 }
@@ -75,7 +74,7 @@ export async function SignIn(email: string) {
 
 export async function loginWithGoogle(
   data: any,
-  callback: (success: boolean) => void
+  callback: (success: boolean, message?: string) => void
 ) {
   const q = query(
     collection(firestore, "users"),
@@ -87,6 +86,7 @@ export async function loginWithGoogle(
     ...doc.data(),
   }));
   if (user.length > 0) {
+    callback(true, "Login Berhasil");
     return user[0];
   } else {
     data.role = "member";

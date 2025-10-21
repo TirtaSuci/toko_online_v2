@@ -11,7 +11,8 @@ const LoginView = () => {
   const [error, setError] = useState("");
   const { push, query } = useRouter();
 
-  const callbackUrl: any = query.callbackUrl || "/";
+  const callbackUrl =
+    typeof query.callbackUrl === "string" ? query.callbackUrl : "/";
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,23 +45,29 @@ const LoginView = () => {
     <div className={style.login}>
       <div className={style.login__label}>Login View</div>
       {error && <p className={style.login__error}>{error}</p>}
-      <form onSubmit={handleLogin}>
-        <div className={style.login__form}>
+      <div className={style.login__form}>
+        <form onSubmit={handleLogin}>
           <Input label="Email" name="email" />
           <Input label="Password" name="password" />
-          <Button type="submit" variant="primary">
+          <Button
+            type="submit"
+            variant="primary"
+            className={style.login__form__button}
+          >
             {isLoading ? "Loading..." : "Login"}
           </Button>
-          <button
-            type="button"
-            onClick={() => signIn("google", { callbackUrl, redirect: false })}
-            className={style.login__form__google}
-          >
-            <i className="bxl  bx-google bx-md" />
-            Google
-          </button>
-        </div>
-      </form>
+        </form>
+        <hr className={style.login__form__divider} />
+        <Button
+          type="button"
+          onClick={() => signIn("google", { callbackUrl, redirect: false })}
+          variant="primary"
+          className={style.login__form__google}
+        >
+          <i className="bxl  bx-google bx-md" />
+          Google
+        </Button>
+      </div>
       <p className={style.login__link}>
         Don{"`"}t have an account ? Sign Up{" "}
         <Link href="/auth/register">Here</Link>{" "}
