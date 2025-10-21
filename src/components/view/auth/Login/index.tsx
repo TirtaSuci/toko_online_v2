@@ -3,7 +3,8 @@ import style from "./Login.module.scss";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
-import { redirect } from "next/dist/server/api-utils";
+import Input from "@/components/layouts/UI/Input";
+import Button from "@/components/layouts/UI/Button";
 
 const LoginView = () => {
   const [isLoading, setIsloading] = useState(false);
@@ -45,27 +46,11 @@ const LoginView = () => {
       {error && <p className={style.login__error}>{error}</p>}
       <form onSubmit={handleLogin}>
         <div className={style.login__form}>
-          <div className={style.login__form__item}>
-            <label htmlFor="email">Email</label>
-            <input
-              className={style.login__form__input}
-              name="email"
-              id="email"
-              type="email"
-            />
-          </div>
-          <div className={style.login__form__item}>
-            <label htmlFor="password">Password</label>
-            <input
-              className={style.login__form__input}
-              name="password"
-              id="password"
-              type="password"
-            />
-          </div>
-          <button type="submit" className={style.login__form__button}>
+          <Input label="Email" name="email" />
+          <Input label="Password" name="password" />
+          <Button type="submit" variant="primary">
             {isLoading ? "Loading..." : "Login"}
-          </button>
+          </Button>
           <button
             type="button"
             onClick={() => signIn("google", { callbackUrl, redirect: false })}

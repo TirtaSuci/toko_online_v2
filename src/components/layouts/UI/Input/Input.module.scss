@@ -1,0 +1,24 @@
+.form {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid;
+  padding: 20px;
+  box-shadow: 5px 10px;
+  margin-bottom: 20px;
+  &__item {
+    display: flex;
+    flex-direction: column;
+    border: none;
+    gap: 5px;
+  }
+
+  &__input {
+    border: none;
+    background-color: #cfcfcf;
+    height: 30px;
+    padding: 10px;
+    outline: none;
+  }
+}
