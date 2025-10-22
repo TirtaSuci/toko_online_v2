@@ -2,6 +2,7 @@ import { collection, getFirestore, query } from "firebase/firestore";
 import { getDocs, addDoc, where } from "firebase/firestore";
 import app from "@/lib/firebase/init";
 import bcrypt from "bcryptjs";
+import instance from "@/lib/axios/instance";
 
 const firestore = getFirestore(app);
 
@@ -77,3 +78,7 @@ export async function loginWithGoogle(data: any, callback: Function) {
     });
   }
 }
+
+export const authService = {
+  registerAccount: (data: any) => instance.post("/auth/register", data),
+};

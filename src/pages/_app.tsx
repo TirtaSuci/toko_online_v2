@@ -4,16 +4,20 @@ import type { AppProps } from "next/app";
 import { Roboto } from "next/font/google";
 import Navbar from "@/components/layouts/Navbar";
 import Head from "next/head";
+import { useRouter } from "next/router";
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
   subsets: ["latin"],
 });
 
+const disableNavbar = ["auth", "admin"];
+
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
+  const router = useRouter();
   return (
     <SessionProvider session={session}>
       <Head>
@@ -23,7 +27,7 @@ export default function App({
         ></link>
       </Head>
       <div className={roboto.className}>
-        <Navbar></Navbar>
+        {!disableNavbar.includes(router.pathname.split("/")[1]) && <Navbar />}
         <Component {...pageProps} />
       </div>
     </SessionProvider>

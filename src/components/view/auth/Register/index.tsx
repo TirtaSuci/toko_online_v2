@@ -1,9 +1,10 @@
-import Link from "next/link";
 import style from "./Register.module.scss";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
 import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
+import { authService } from "@/Services/auth";
+import AuthLayout from "@/components/layouts/AuthLayout";
 
 const RegisterView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,13 +29,7 @@ const RegisterView = () => {
       return;
     }
 
-    const result = await fetch("/api/user/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    const result = await authService.registerAccount(data);
 
     if (result.status === 200) {
       form.reset();
@@ -48,28 +43,27 @@ const RegisterView = () => {
   };
 
   return (
-    <div className={style.register}>
-      <div className={style.register__label}>Register View</div>
-      {error && <p className={style.register__error}>{error}</p>}
+    <AuthLayout
+      title="Register Account"
+      link="/auth/login"
+      linkText="Already have an account? "
+      textLink="Login"
+      error={error}
+    >
       <form onSubmit={handleRegister}>
-        <div className={style.register__form}>
-          <Input label="Fullname" name="fullname"></Input>
-          <Input label="Email" name="email"></Input>
-          <Input label="Password" name="password" type="password"></Input>
-          <Input
-            label="Confirm Password"
-            name="confirmPassword"
-            type="password"
-          ></Input>
-          <Button type="submit" className={style.register__button}>
-            {isLoading ? "Loading..." : "Register"}
-          </Button>
-        </div>
+        <Input label="Fullname" name="fullname"></Input>
+        <Input label="Email" name="email"></Input>
+        <Input label="Password" name="password" type="password"></Input>
+        <Input
+          label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+        ></Input>
+        <Button type="submit" className={style.register__button}>
+          {isLoading ? "Loading..." : "Register"}
+        </Button>
       </form>
-      <p className={style.register__link}>
-        Do you already have an account ? <Link href="/auth/login">Login</Link>{" "}
-      </p>
-    </div>
+    </AuthLayout>
   );
 };
 

@@ -1,4 +1,4 @@
-.register {
+.authLayout {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,12 +24,6 @@
     box-shadow: 5px 10px;
     margin-bottom: 20px;
   }
-
-  &__button {
-    width: 100%;
-    margin-top: 10px;
-  }
-
   &__link {
     a {
       color: blue;
