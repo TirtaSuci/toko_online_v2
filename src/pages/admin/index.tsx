@@ -1,7 +1,11 @@
+import AdminLayout from "@/components/layouts/AdminLayout";
+
 const AdminIndex = () => {
   return (
     <div>
-      <div>AdminIndex</div>
+      <AdminLayout>
+        <div>Admin Index</div>
+      </AdminLayout>
     </div>
   );
 };

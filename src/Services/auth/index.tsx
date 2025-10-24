@@ -59,7 +59,10 @@ export async function SignIn(email: string) {
   }
 }
 
-export async function loginWithGoogle(data: any, callback: Function) {
+export async function loginWithGoogle(
+  data: any,
+  callback: (data: any) => void
+) {
   const q = query(
     collection(firestore, "users"),
     where("email", "==", data.email)

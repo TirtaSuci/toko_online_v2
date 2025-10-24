@@ -1,10 +1,16 @@
 import SideBar from "@/components/fragment/SideBar";
+import Style from "./AdminLayout.module.scss";
 
-const AdminLayout = () => {
+type Propstype = {
+  children: React.ReactNode;
+};
+
+const AdminLayout = (props: Propstype) => {
+  const { children } = props;
   return (
-    <div>
+    <div className={Style.adminLayout}>
       <SideBar />
-      <div>Admin Layout Content</div>
+      {children}
     </div>
   );
 };
