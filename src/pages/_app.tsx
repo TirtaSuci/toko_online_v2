@@ -22,6 +22,10 @@ export default function App({
     <SessionProvider session={session}>
       <Head>
         <link
+          href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css"
+          rel="stylesheet"
+        ></link>
+        <link
           href="https://cdn.boxicons.com/fonts/brands/boxicons-brands.min.css"
           rel="stylesheet"
         ></link>

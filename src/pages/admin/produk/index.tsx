@@ -1,8 +1,12 @@
+import AdminLayout from "@/components/layouts/AdminLayout";
+
 const ProdukIndex = () => {
   return (
-    <>
-      <h1>Produk Page</h1>;
-    </>
+    <div>
+      <AdminLayout>
+        <h1>Produk Page</h1>;
+      </AdminLayout>
+    </div>
   );
 };
 

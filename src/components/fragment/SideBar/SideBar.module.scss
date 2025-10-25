@@ -1,11 +1,53 @@
 .sideBar {
   width: 20%;
   background-color: #2b2b2b;
+  color: #fff;
   border-right: 1px solid #dee2e6;
   height: 100vh;
   padding: 20px;
 
-  p {
-    color: #fff;
+  &__content {
+  }
+  &__top {
+    &__title {
+      font-size: 24px;
+      font-weight: 300;
+      text-align: center;
+    }
+    &__lists {
+      margin-top: 20px;
+      flex-direction: column;
+      display: flex;
+      gap: 5px;
+      &__item {
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        //background-color: #fff;
+        border-radius: 5px;
+        height: 30px;
+        padding: 0 10px;
+        cursor: pointer;
+        transition: 0.3s;
+
+        &__title {
+          font-size: 16px;
+          font-weight: 500;
+        }
+        i {
+          font-size: 20px;
+          margin-right: 10px;
+        }
+        &__active {
+          background-color: #fff;
+          color: #000;
+        }
+      }
+      &__item:hover {
+        background-color: #fff;
+        color: #000;
+        transition: 0.3s;
+      }
+    }
   }
 }

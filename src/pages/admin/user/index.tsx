@@ -1,4 +1,10 @@
+import AdminLayout from "@/components/layouts/AdminLayout";
+
 const UserIndex = () => {
-  return <div>UserIndex</div>;
+  return (
+    <AdminLayout>
+      <div>User Index</div>
+    </AdminLayout>
+  );
 };
 export default UserIndex;
