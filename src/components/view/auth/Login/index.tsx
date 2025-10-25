@@ -50,8 +50,8 @@ const LoginView = () => {
       error={error}
     >
       <form onSubmit={handleLogin}>
-        <Input label="Email" name="email" />
-        <Input label="Password" name="password" />
+        <Input label="Email" name="email" type="email" />
+        <Input label="Password" name="password" type="password" />
         <Button
           type="submit"
           variant="primary"

@@ -1,12 +1,9 @@
-import AdminLayout from "@/components/layouts/AdminLayout";
-import Style from "./AdminIndex.module.scss";
+import AdminView from "@/components/view/Admin/Dashboard";
 
 const AdminIndex = () => {
   return (
     <div>
-      <AdminLayout>
-        <div>Admin Index</div>
-      </AdminLayout>
+      <AdminView />
     </div>
   );
 };

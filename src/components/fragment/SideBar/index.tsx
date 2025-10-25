@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import style from "./SideBar.module.scss";
 import Link from "next/link";
+import Button from "@/components/layouts/UI/Button";
+import { signOut } from "next-auth/react";
 
 type Propstype = {
   lists: Array<{
@@ -34,6 +36,16 @@ const SideBar = (props: Propstype) => {
             </Link>
           ))}
         </div>
+      </div>
+      <div className={style.sideBar__bottom}>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => signOut()}
+          className={style.sideBar__bottom__button}
+        >
+          Logout
+        </Button>
       </div>
     </div>
   );

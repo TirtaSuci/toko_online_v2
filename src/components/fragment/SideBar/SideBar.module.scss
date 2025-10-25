@@ -5,9 +5,10 @@
   border-right: 1px solid #dee2e6;
   height: 100vh;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
-  &__content {
-  }
   &__top {
     &__title {
       font-size: 24px;
@@ -48,6 +49,13 @@
         color: #000;
         transition: 0.3s;
       }
+    }
+  }
+  &__bottom {
+    width: 100%;
+    &__button {
+      width: 100%;
+      border-radius: 5px;
     }
   }
 }
