@@ -11,14 +11,19 @@ const listSideBar = [
     icon: "bx-dashboard",
   },
   {
-    title: "Users",
+    title: "Profile",
     path: "/admin/profile",
-    icon: "bx-user",
+    icon: "bx-user-id-card",
   },
   {
     title: "Produk",
     path: "/admin/produk",
     icon: "bx-package",
+  },
+  {
+    title: "Users Management",
+    path: "/admin/userManagement",
+    icon: "bx-user",
   },
 ];
 
@@ -27,7 +32,7 @@ const AdminLayout = (props: Propstype) => {
   return (
     <div className={Style.adminLayout}>
       <SideBar lists={listSideBar} />
-      {children}
+      <div className={Style.adminLayout__main}>{children}</div>
     </div>
   );
 };

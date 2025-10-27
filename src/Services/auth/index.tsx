@@ -60,7 +60,15 @@ export async function SignIn(email: string) {
 }
 
 export async function loginWithGoogle(
-  data: any,
+  data: {
+    email: string;
+    fullname: string;
+    type: string;
+    role: string;
+    updatedAt?: Date;
+    createdAt?: Date;
+    password?: string;
+  },
   callback: (data: any) => void
 ) {
   const q = query(
@@ -76,6 +84,9 @@ export async function loginWithGoogle(
     callback(user[0]);
   } else {
     data.role = "member";
+    data.createdAt = new Date();
+    data.updatedAt = new Date();
+    data.password = ``;
     await addDoc(collection(firestore, "users"), data).then(() => {
       callback(data);
     });

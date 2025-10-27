@@ -27,7 +27,7 @@ export default function WithAuth(
       }
       if (token) {
         if (onlyAuth.includes(pathname)) {
-          return NextResponse.redirect(new URL("/", req.url));
+          return NextResponse.redirect(new URL(encodeURI(req.url)));
         }
         if (token.role !== "admin" && onlyAdmin.includes(pathname)) {
           return NextResponse.redirect(new URL("/", req.url));

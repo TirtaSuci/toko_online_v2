@@ -4,7 +4,7 @@ const AdminView = () => {
   return (
     <div>
       <AdminLayout>
-        <div>Admin Index</div>
+        <h1>Admin Index</h1>
       </AdminLayout>
     </div>
   );

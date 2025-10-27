@@ -4,7 +4,7 @@ const ProdukIndex = () => {
   return (
     <div>
       <AdminLayout>
-        <h1>Produk Page</h1>;
+        <h1>Produk Page</h1>
       </AdminLayout>
     </div>
   );
