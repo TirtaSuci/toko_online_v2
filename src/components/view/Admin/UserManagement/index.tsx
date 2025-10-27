@@ -33,8 +33,18 @@ const UsersAdminView = (props: Propstype) => {
                 <td>{user.role}</td>
                 <td>
                   <div className={style.Users__table__action}>
-                    <Button type="button">Update</Button>
-                    <Button type="button">Delete</Button>
+                    <Button
+                      type="button"
+                      className={style.Users__table__action__button}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      type="button"
+                      className={style.Users__table__action__button}
+                    >
+                      Delete
+                    </Button>
                   </div>
                 </td>
               </tr>

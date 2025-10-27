@@ -6,12 +6,9 @@
     text-align: center;
     border: 1px solid #ccc;
     margin-top: 40px;
-    th {
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
-    }
+    th,
     td {
-      padding: 15px;
+      padding: 10px;
       border-bottom: 1px solid #ccc;
     }
     thead {
@@ -28,6 +25,17 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
+
+      &__button {
+        border: none;
+        border: 1px solid #000000;
+      }
+      Button:hover {
+        background-color: #ffffff;
+        color: black;
+        border: 1px solid black;
+        transform: 0.3s;
+      }
     }
   }
 }
