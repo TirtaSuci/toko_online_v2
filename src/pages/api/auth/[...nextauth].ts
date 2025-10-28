@@ -53,6 +53,7 @@ const authOptions: NextAuthOptions = {
           email: user.email,
           fullname: user.name,
           type: `google`,
+          role: `member`,
         };
         await loginWithGoogle(data, (data: any) => {
           token.email = data.email;
