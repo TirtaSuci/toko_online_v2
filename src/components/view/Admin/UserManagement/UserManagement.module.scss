@@ -27,8 +27,20 @@
       gap: 10px;
 
       &__button {
+        padding: 10px 30px;
+        background-color: #000000;
+        color: #ffffff;
+        cursor: pointer;
         border: none;
         border: 1px solid #000000;
+
+        &__edit {
+          background-color: #ffffff;
+        }
+        &__delete {
+          background-color: #ca3030;
+          border: 1px solid #ca3030;
+        }
       }
       Button:hover {
         background-color: #ffffff;

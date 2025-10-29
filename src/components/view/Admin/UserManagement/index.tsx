@@ -1,8 +1,7 @@
 import AdminLayout from "@/components/layouts/AdminLayout";
 import Button from "@/components/layouts/UI/Button";
 import style from "./UserManagement.module.scss";
-import Modal from "@/components/layouts/Modal";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import ModalUpdateUser from "./ModalUpdateUSer";
 
 type Propstype = {
@@ -12,6 +11,12 @@ type Propstype = {
 const UsersAdminView = (props: Propstype) => {
   const { users } = props;
   const [modal, setModal] = useState<any>({});
+  const [usersData, setUserData] = useState<any>([]);
+
+  useEffect(() => {
+    setUserData(users);
+  }, [users]);
+
   return (
     <>
       <AdminLayout>
@@ -29,7 +34,7 @@ const UsersAdminView = (props: Propstype) => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user, index: number) => (
+              {usersData.map((user: any, index: number) => (
                 <tr key={user.id}>
                   <td>{index + 1}</td>
                   <td>{user.id}</td>
@@ -43,13 +48,13 @@ const UsersAdminView = (props: Propstype) => {
                         className={style.Users__table__action__button}
                         onClick={() => setModal(user)}
                       >
-                        Update
+                        <i className="bx bxs-edit" />
                       </Button>
                       <Button
                         type="button"
-                        className={style.Users__table__action__button}
+                        className={style.Users__table__action__button__delete}
                       >
-                        Delete
+                        <i className="bx bxs-trash" />
                       </Button>
                     </div>
                   </td>
@@ -60,7 +65,11 @@ const UsersAdminView = (props: Propstype) => {
         </div>
       </AdminLayout>
       {Object.keys(modal).length > 0 && (
-        <ModalUpdateUser modal={modal} setModal={setModal}></ModalUpdateUser>
+        <ModalUpdateUser
+          modal={modal}
+          setModal={setModal}
+          setUserData={setUserData}
+        ></ModalUpdateUser>
       )}
     </>
   );
