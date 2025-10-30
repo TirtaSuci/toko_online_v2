@@ -29,6 +29,8 @@ const RegisterView = () => {
       return;
     }
 
+    delete data.confirmPassword;
+
     const result = await authService.registerAccount(data);
 
     if (result.status === 200) {

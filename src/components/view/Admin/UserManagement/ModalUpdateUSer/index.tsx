@@ -6,7 +6,7 @@ import userServices from "@/Services/user";
 import { FormEvent, useState } from "react";
 
 const ModalUpdateUser = (props: any) => {
-  const { modal, setModal, setUserData } = props;
+  const { updateData, setUpdateData, setUserData } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
@@ -16,11 +16,11 @@ const ModalUpdateUser = (props: any) => {
     const data = {
       role: form.role.value,
     };
-    const result = await userServices.updateServices(modal.id, data);
+    const result = await userServices.updateServices(updateData.id, data);
 
     if (result.status === 200) {
       setIsLoading(false);
-      setModal({});
+      setUpdateData({});
       const response = await userServices.getAllUsers();
       setUserData(response.data.data);
     } else {
@@ -28,20 +28,25 @@ const ModalUpdateUser = (props: any) => {
     }
   };
   return (
-    <Modal onClose={() => setModal({})}>
+    <Modal onClose={() => setUpdateData({})}>
       <h1>Update User</h1>
       <form onSubmit={handleRegister}>
         <Input
           label="Fullname"
           name="fullname"
-          deafultValue={modal.fullname}
+          deafultValue={updateData.fullname}
           disabled
         />
-        <Input label="Email" name="email" deafultValue={modal.email} disabled />
+        <Input
+          label="Email"
+          name="email"
+          deafultValue={updateData.email}
+          disabled
+        />
         <Select
           label="Role"
           name="role"
-          defaultValue={modal.role}
+          defaultValue={updateData.role}
           options={[
             { label: "member", value: "member" },
             { label: "admin", value: "admin" },

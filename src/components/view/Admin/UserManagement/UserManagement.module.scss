@@ -27,7 +27,6 @@
       gap: 10px;
 
       &__button {
-        padding: 10px 30px;
         background-color: #000000;
         color: #ffffff;
         cursor: pointer;
@@ -35,18 +34,28 @@
         border: 1px solid #000000;
 
         &__edit {
-          background-color: #ffffff;
+          background-color: #5980d4e8;
+          border: 1px solid #5980d4e8;
+          font-size: 20px;
         }
+
+        &__edit:hover {
+          background-color: #1f4596e8;
+          border: 1px solid #5980d4e8;
+          transform: 0.3s;
+        }
+
         &__delete {
           background-color: #ca3030;
           border: 1px solid #ca3030;
+          font-size: 20px;
         }
-      }
-      Button:hover {
-        background-color: #ffffff;
-        color: black;
-        border: 1px solid black;
-        transform: 0.3s;
+
+        &__delete:hover {
+          background-color: #971717;
+          border: 1px solid #ca3030;
+          transform: 0.3s;
+        }
       }
     }
   }

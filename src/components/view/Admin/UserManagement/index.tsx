@@ -1,7 +1,7 @@
 import AdminLayout from "@/components/layouts/AdminLayout";
 import Button from "@/components/layouts/UI/Button";
 import style from "./UserManagement.module.scss";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ModalUpdateUser from "./ModalUpdateUSer";
 
 type Propstype = {
@@ -10,8 +10,9 @@ type Propstype = {
 
 const UsersAdminView = (props: Propstype) => {
   const { users } = props;
-  const [modal, setModal] = useState<any>({});
+  const [updateData, setUpdateData] = useState<any>({});
   const [usersData, setUserData] = useState<any>([]);
+  const [deletedUser, setDeletedUser] = useState<any>([]);
 
   useEffect(() => {
     setUserData(users);
@@ -45,14 +46,15 @@ const UsersAdminView = (props: Propstype) => {
                     <div className={style.Users__table__action}>
                       <Button
                         type="button"
-                        className={style.Users__table__action__button}
-                        onClick={() => setModal(user)}
+                        className={style.Users__table__action__button__edit}
+                        onClick={() => setUpdateData(user)}
                       >
                         <i className="bx bxs-edit" />
                       </Button>
                       <Button
                         type="button"
                         className={style.Users__table__action__button__delete}
+                        onClick={() => setDeletedUser(user)}
                       >
                         <i className="bx bxs-trash" />
                       </Button>
@@ -64,11 +66,17 @@ const UsersAdminView = (props: Propstype) => {
           </table>
         </div>
       </AdminLayout>
-      {Object.keys(modal).length > 0 && (
+      {Object.keys(updateData).length > 0 && (
         <ModalUpdateUser
-          modal={modal}
-          setModal={setModal}
+          updateData={updateData}
+          setUpdateData={setUpdateData}
           setUserData={setUserData}
+        ></ModalUpdateUser>
+      )}
+      {Object.keys(deletedUser).length > 0 && (
+        <ModalUpdateUser
+          deletedUser={deletedUser}
+          setDeletedUser={setDeletedUser}
         ></ModalUpdateUser>
       )}
     </>

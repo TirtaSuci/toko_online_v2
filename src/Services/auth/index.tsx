@@ -94,5 +94,5 @@ export async function loginWithGoogle(
 }
 
 export const authService = {
-  registerAccount: (data: any) => instance.post("/auth/register", data),
+  registerAccount: (data: any) => instance.post("/api/user/register", data),
 };
