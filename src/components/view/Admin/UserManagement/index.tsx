@@ -3,6 +3,7 @@ import Button from "@/components/layouts/UI/Button";
 import style from "./UserManagement.module.scss";
 import { useEffect, useState } from "react";
 import ModalUpdateUser from "./ModalUpdateUSer";
+import ModalDeleteUser from "./ModalDeleteUser";
 
 type Propstype = {
   users: any[];
@@ -74,10 +75,11 @@ const UsersAdminView = (props: Propstype) => {
         ></ModalUpdateUser>
       )}
       {Object.keys(deletedUser).length > 0 && (
-        <ModalUpdateUser
+        <ModalDeleteUser
           deletedUser={deletedUser}
           setDeletedUser={setDeletedUser}
-        ></ModalUpdateUser>
+          setUserData={setUserData}
+        ></ModalDeleteUser>
       )}
     </>
   );

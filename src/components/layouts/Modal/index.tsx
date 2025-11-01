@@ -1,4 +1,4 @@
-import { Dispatch, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import style from "./Modal.module.scss";
 
 const Modal = ({
