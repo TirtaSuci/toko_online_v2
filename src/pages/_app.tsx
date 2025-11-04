@@ -11,7 +11,7 @@ const roboto = Roboto({
   subsets: ["latin"],
 });
 
-const disableNavbar = ["auth", "admin"];
+const disableNavbar = [`auth`, `admin`, `user`];
 
 export default function App({
   Component,

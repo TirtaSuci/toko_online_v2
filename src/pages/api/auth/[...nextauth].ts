@@ -24,7 +24,6 @@ const authOptions: NextAuthOptions = {
           password: string;
         };
         const user: any = await SignIn(email);
-        console.log("🔥 User fetched from Firestore:", user);
         if (user) {
           const isPasswordValid = await compare(password, user.password);
           if (isPasswordValid) {
@@ -48,6 +47,7 @@ const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.fullname = user.fullname;
         token.role = user.role;
+        token.id = user.id;
       }
       if (account?.provider === "google") {
         const data = {
@@ -73,6 +73,9 @@ const authOptions: NextAuthOptions = {
       }
       if ("role" in token) {
         session.user.role = token.role;
+      }
+      if ("id" in token) {
+        session.user.id = token.id;
       }
       const accessToken = jwt.sign(token, process.env.NEXTAUTH_SECRET || "", {
         algorithm: "HS256",
