@@ -10,7 +10,6 @@ const ModalUpdateUser = (props: any) => {
   const { updateData, setUpdateData, setUserData } = props;
   const [isLoading, setIsLoading] = useState(false);
   const session: any = useSession();
-  console.log("session =", session);
 
   const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

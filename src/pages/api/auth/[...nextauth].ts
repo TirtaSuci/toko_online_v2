@@ -53,13 +53,16 @@ const authOptions: NextAuthOptions = {
         const data = {
           email: user.email,
           fullname: user.name,
+          image: user.image,
           type: `google`,
           role: `member`,
         };
         await loginWithGoogle(data, (data: any) => {
           token.email = data.email;
           token.fullname = data.fullname;
+          token.image = data.image;
           token.role = data.role;
+          token.id = data.id;
         });
       }
       return token;
@@ -70,6 +73,9 @@ const authOptions: NextAuthOptions = {
       }
       if ("fullname" in token) {
         session.user.fullname = token.fullname;
+      }
+      if ("image" in token) {
+        session.user.image = token.image;
       }
       if ("role" in token) {
         session.user.role = token.role;

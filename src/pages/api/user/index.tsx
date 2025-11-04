@@ -28,7 +28,6 @@ export default async function handler(
       token,
       process.env.NEXTAUTH_SECRET || "",
       async (err: any, decoded: any) => {
-        console.log(decoded);
         if (decoded && decoded.role === "admin") {
           await updateData(`users`, user, data, (result: boolean) => {
             if (result) {

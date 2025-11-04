@@ -3,6 +3,7 @@ import { getDocs, addDoc, where } from "firebase/firestore";
 import app from "@/lib/firebase/init";
 import bcrypt from "bcryptjs";
 import instance from "@/lib/axios/instance";
+import { addData } from "@/lib/firebase/service";
 
 const firestore = getFirestore(app);
 
@@ -11,6 +12,7 @@ export async function signUp(
     email: string;
     fullname: string;
     password: string;
+    image?: string;
     role: string;
     updatedAt?: Date;
     createdAt?: Date;
@@ -61,13 +63,14 @@ export async function SignIn(email: string) {
 
 export async function loginWithGoogle(
   data: {
+    id?: string;
     email: string;
     fullname: string;
     type: string;
     role: string;
+    image?: string;
     updatedAt?: Date;
     createdAt?: Date;
-    password?: string;
   },
   callback: (data: any) => void
 ) {
@@ -86,9 +89,11 @@ export async function loginWithGoogle(
     data.role = "member";
     data.createdAt = new Date();
     data.updatedAt = new Date();
-    data.password = ``;
-    await addDoc(collection(firestore, "users"), data).then(() => {
-      callback(data);
+    await addData("users", data, (status: boolean, res: any) => {
+      data.id = res.path.replace("users/", "");
+      if (status) {
+        callback(data);
+      }
     });
   }
 }

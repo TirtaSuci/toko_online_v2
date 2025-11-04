@@ -8,8 +8,6 @@ const ModalDeleteUser = (props: any) => {
 
   const session: any = useSession();
 
-  console.log("session =", session);
-
   const handleDelete = async () => {
     userServices.deleteUser(deletedUser.id, session.data?.accessToken);
     const response = await userServices.getAllUsers();
