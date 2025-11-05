@@ -3,15 +3,40 @@ import style from "./Profile.module.scss";
 import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
 import Image from "next/image";
+import { useState } from "react";
 
 const ProfileView = ({ profile }: any) => {
+  const [preview, setPreview] = useState(profile.image);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ["image/jpeg", "image/png"];
+    if (!validTypes.includes(file.type)) {
+      alert("Hanya file JPG atau PNG yang diperbolehkan!");
+      e.target.value = "";
+      return;
+    }
+
+    const maxSize = 1 * 1024 * 1024; // 1MB
+    if (file.size > maxSize) {
+      alert("Ukuran file maksimal 1MB!");
+      e.target.value = "";
+      return;
+    }
+
+    const imageURL = URL.createObjectURL(file);
+    setPreview(imageURL);
+  };
+
   return (
     <UserLayout>
       <h1 className={style.profile__title}>Profile Page</h1>
       <div className={style.profile__main}>
         <div className={style.profile__main__avatar}>
           <div className={style.profile__main__avatar__title}>Foto Profil </div>
-          <label htmlFor="image">
+          <label htmlFor="upload_image">
             <Image
               className={style.profile__main__avatar__image}
               src={profile.image}
@@ -20,11 +45,20 @@ const ProfileView = ({ profile }: any) => {
               height={200}
             />
           </label>
-          <label className={style.profile__main__avatar__label} htmlFor="image">
+          <label
+            className={style.profile__main__avatar__label}
+            htmlFor="upload_image"
+          >
             Pilih Gambar
           </label>
           <p>Ukuran gambar maks. 1MB</p>
-          <Input name="image" type="file">
+          <Input
+            name="image"
+            id="upload_image"
+            type="file"
+            accept=".jpg, .jpeg, .png"
+            onChange={handleImageChange}
+          >
             upload
           </Input>
         </div>

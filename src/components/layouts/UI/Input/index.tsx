@@ -3,20 +3,24 @@ import style from "@/components/layouts/UI/Input/Input.module.scss";
 type Propstype = {
   label?: string;
   name: string;
+  id?: string;
   type?: string;
   placeholder?: string;
   deafultValue?: string;
   disabled?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const Input = (props: Propstype) => {
   const {
     label,
     name,
+    id = name,
     type = "text",
     placeholder,
     deafultValue,
     disabled,
+    onChange,
   } = props;
   return (
     <div className={style.form__item}>
@@ -24,11 +28,12 @@ const Input = (props: Propstype) => {
       <input
         className={style.form__input}
         name={name}
-        id={name}
+        id={id}
         type={type}
         placeholder={placeholder}
         defaultValue={deafultValue}
         disabled={disabled}
+        onChange={onChange}
       />
     </div>
   );
