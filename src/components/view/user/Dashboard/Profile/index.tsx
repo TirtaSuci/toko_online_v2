@@ -10,10 +10,23 @@ const ProfileView = ({ profile }: any) => {
       <h1 className={style.profile__title}>Profile Page</h1>
       <div className={style.profile__main}>
         <div className={style.profile__main__avatar}>
-          <div className={style.profile__main__avatar__image}>
-            <Image src={profile.image} alt="Profile" width={100} height={100} />
-          </div>
-          <div>Foto Profil </div>
+          <div className={style.profile__main__avatar__title}>Foto Profil </div>
+          <label htmlFor="image">
+            <Image
+              className={style.profile__main__avatar__image}
+              src={profile.image}
+              alt="Profile"
+              width={200}
+              height={200}
+            />
+          </label>
+          <label className={style.profile__main__avatar__label} htmlFor="image">
+            Pilih Gambar
+          </label>
+          <p>Ukuran gambar maks. 1MB</p>
+          <Input name="image" type="file">
+            upload
+          </Input>
         </div>
         <div className={style.profile__main__details}>
           <div className={style.profile__main__details__title}>Data Profil</div>

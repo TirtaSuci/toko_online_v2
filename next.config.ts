@@ -3,8 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
-  imagess: {
-    domains: [`https://lh3.googleusercontent.com`],
+  images: {
+    domains: [`lh3.googleusercontent.com`],
   },
 };
 
