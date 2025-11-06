@@ -6,19 +6,18 @@ import { useSession } from "next-auth/react";
 const ProfilePage = () => {
   const [profile, setProfile] = useState({});
   const session: any = useSession();
-  const { status } = useSession();
 
   useEffect(() => {
-    const getAllUsers = async () => {
-      if (status === "authenticated" && session.data?.accessToken) {
+    const getProfile = async () => {
+      if (session.data?.accessToken && Object.keys(profile).length === 0) {
         const response = await userService.getProfile(
           session.data?.accessToken
         );
         setProfile(response.data.data);
       }
     };
-    getAllUsers();
-  }, [status, session.data?.accessToken]); // tidak pakai [session] langsung
+    getProfile();
+  }, [profile, session]); // tidak pakai [session] langsung
 
   return (
     <div>

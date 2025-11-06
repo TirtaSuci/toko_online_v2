@@ -9,8 +9,15 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import app from "./init";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 
 const firestore = getFirestore(app);
+const storage = getStorage(app);
 
 export async function retriveData(collectionName: string) {
   const snapshot = await getDocs(collection(firestore, collectionName));
@@ -61,4 +68,31 @@ export async function deleteData(
   await deleteDoc(docRef)
     .then(() => callback(true))
     .catch(() => callback(false));
+}
+
+export async function uploadImage(id: string, image: any) {
+  if (image)
+    if (image.size < 10000000) {
+      const newName = `profile.` + image.name.split(".")[1];
+      const storageRef = ref(storage, `images/${id}/${newName}`);
+      const uploadTask = uploadBytesResumable(storageRef, image);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            console.log("File available at", downloadURL);
+          });
+        }
+      );
+    } else {
+      return false;
+    }
 }
