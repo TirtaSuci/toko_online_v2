@@ -70,7 +70,7 @@ export async function deleteData(
     .catch(() => callback(false));
 }
 
-export async function uploadImage(id: string, image: any) {
+export async function uploadImage(id: string, image: any, callback: Function) {
   if (image)
     if (image.size < 10000000) {
       const newName = `profile.` + image.name.split(".")[1];
@@ -88,7 +88,7 @@ export async function uploadImage(id: string, image: any) {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            console.log("File available at", downloadURL);
+            callback(downloadURL);
           });
         }
       );

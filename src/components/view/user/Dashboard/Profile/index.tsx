@@ -4,13 +4,35 @@ import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
 import Image from "next/image";
 import { uploadImage } from "@/lib/firebase/service";
+import { useState } from "react";
+import userServices from "@/Services/user";
 
-const ProfileView = ({ profile }: any) => {
-  const handleChangeAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+const ProfileView = ({ profile, setProfile, session }: any) => {
+  const [changeImage, setChangeImage] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const handleChangeAvatar = (e: any) => {
+    setIsLoading(true);
+    e.preventDefault();
+    const file = e.target[0]?.files[0];
     if (file) {
-      console.log("data =", file);
-      await uploadImage(profile.id, file);
+      uploadImage(profile.id, file, async (newImageURL: string) => {
+        console.log("newimage =>", newImageURL);
+        const data = { image: newImageURL };
+        const result = await userServices.updateProfile(
+          profile.id,
+          data,
+          session.data?.accessToken
+        );
+
+        if (result.status === 200) {
+          setIsLoading(false);
+          setProfile({ ...profile, image: newImageURL });
+          setChangeImage({});
+          e.target[0].value = "";
+        } else {
+          setIsLoading(false);
+        }
+      });
     }
   };
 
@@ -20,7 +42,7 @@ const ProfileView = ({ profile }: any) => {
       <div className={style.profile__main}>
         <div className={style.profile__main__avatar}>
           <div className={style.profile__main__avatar__title}>Foto Profil </div>
-          <form>
+          <form onSubmit={handleChangeAvatar}>
             <label htmlFor="upload_image">
               <Image
                 className={style.profile__main__avatar__image}
@@ -30,25 +52,38 @@ const ProfileView = ({ profile }: any) => {
                 height={200}
               />
             </label>
-            <label
-              className={style.profile__main__avatar__label}
-              htmlFor="upload_image"
-            >
-              Pilih Gambar
-            </label>
-            <p>Ukuran gambar maks. 1MB</p>
+            {changeImage.name ? (
+              <p className={style.profile__main__avatar__label}>
+                {changeImage.name}
+              </p>
+            ) : (
+              <>
+                <label
+                  className={style.profile__main__avatar__label}
+                  htmlFor="upload_image"
+                >
+                  Pilih Gambar
+                </label>
+                <p>Ukuran gambar maks. 1MB</p>
+              </>
+            )}
             <Input
               name="image"
               id="upload_image"
               type="file"
-              onChange={handleChangeAvatar}
+              onChange={(e: any) => {
+                e.preventDefault();
+                setChangeImage(e.currentTarget.files[0]);
+              }}
             />
-            <Button
-              type="submit"
-              className={style.profile__main__avatar__button}
-            >
-              Upload Gambar
-            </Button>
+            {changeImage.name && (
+              <Button
+                type="submit"
+                className={style.profile__main__avatar__button}
+              >
+                {isLoading ? "Loading..." : "Simpan Perubahan"}
+              </Button>
+            )}
           </form>
         </div>
         <div className={style.profile__main__details}>
