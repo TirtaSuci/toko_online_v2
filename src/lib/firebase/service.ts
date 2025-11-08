@@ -72,7 +72,7 @@ export async function deleteData(
 
 export async function uploadImage(id: string, image: any, callback: Function) {
   if (image)
-    if (image.size < 10000000) {
+    if (image.size < 1000000) {
       const newName = `profile.` + image.name.split(".")[1];
       const storageRef = ref(storage, `images/${id}/${newName}`);
       const uploadTask = uploadBytesResumable(storageRef, image);
@@ -88,11 +88,11 @@ export async function uploadImage(id: string, image: any, callback: Function) {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            callback(downloadURL);
+            callback(true, downloadURL);
           });
         }
       );
     } else {
-      return false;
+      return callback(false);
     }
 }

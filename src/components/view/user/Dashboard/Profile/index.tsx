@@ -6,33 +6,40 @@ import Image from "next/image";
 import { uploadImage } from "@/lib/firebase/service";
 import { useState } from "react";
 import userServices from "@/Services/user";
+import { sendError } from "next/dist/server/api-utils";
 
 const ProfileView = ({ profile, setProfile, session }: any) => {
   const [changeImage, setChangeImage] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState({});
   const handleChangeAvatar = (e: any) => {
     setIsLoading(true);
     e.preventDefault();
     const file = e.target[0]?.files[0];
     if (file) {
-      uploadImage(profile.id, file, async (newImageURL: string) => {
-        console.log("newimage =>", newImageURL);
-        const data = { image: newImageURL };
-        const result = await userServices.updateProfile(
-          profile.id,
-          data,
-          session.data?.accessToken
-        );
-
-        if (result.status === 200) {
-          setIsLoading(false);
-          setProfile({ ...profile, image: newImageURL });
-          setChangeImage({});
-          e.target[0].value = "";
-        } else {
-          setIsLoading(false);
+      uploadImage(
+        profile.id,
+        file,
+        async (status: boolean, newImageURL: string) => {
+          if (status) {
+            console.log("newimage =>", newImageURL);
+            const data = { image: newImageURL };
+            const result = await userServices.updateProfile(
+              profile.id,
+              data,
+              session.data?.accessToken
+            );
+            if (result.status === 200) {
+              setIsLoading(false);
+              setProfile({ ...profile, image: newImageURL });
+              setChangeImage({});
+              e.target[0].value = "";
+            } else {
+              setIsLoading(false);
+            }
+          }
         }
-      });
+      );
     }
   };
 
@@ -44,13 +51,23 @@ const ProfileView = ({ profile, setProfile, session }: any) => {
           <div className={style.profile__main__avatar__title}>Foto Profil </div>
           <form onSubmit={handleChangeAvatar}>
             <label htmlFor="upload_image">
-              <Image
-                className={style.profile__main__avatar__image}
-                src={profile.image || "/image/deafult.jpg"}
-                alt="Profile"
-                width={200}
-                height={200}
-              />
+              {profile.image ? (
+                <Image
+                  className={style.profile__main__avatar__image}
+                  src={profile.image}
+                  alt="Profile"
+                  width={200}
+                  height={200}
+                />
+              ) : (
+                <div className={style.profile__main__avatar__image}>
+                  {profile?.name
+                    ? /^[A-Za-z]$/.test(profile.name.charAt(0))
+                      ? profile.name.charAt(0).toUpperCase()
+                      : "#"
+                    : "A"}
+                </div>
+              )}
             </label>
             {changeImage.name ? (
               <p className={style.profile__main__avatar__label}>

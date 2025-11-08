@@ -25,6 +25,12 @@
         width: 150px;
         height: 150px;
         border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 100px;
+        background: #ddd;
+        font-weight: bold;
       }
       &__label {
         border: 1px solid #c2c2c2;
