@@ -42,7 +42,7 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, account, user }: any) {
+    async jwt({ token, account, user, trigger, session }: any) {
       if (account?.provider === "credentials") {
         token.email = user.email;
         token.fullname = user.fullname;
@@ -50,6 +50,7 @@ const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.image = user.image;
       }
+
       if (account?.provider === "google") {
         const data = {
           email: user.email,
@@ -66,8 +67,16 @@ const authOptions: NextAuthOptions = {
           token.id = data.id;
         });
       }
+      // --- 🔹 Tambahan penting: update token saat session.update() dipanggil
+      if (trigger === "update" && session?.user) {
+        token.fullname = session.user.fullname;
+        token.email = session.user.email;
+        token.image = session.user.image;
+      }
+
       return token;
     },
+
     async session({ session, token }: any) {
       if ("email" in token) {
         session.user.email = token.email;
@@ -84,10 +93,13 @@ const authOptions: NextAuthOptions = {
       if ("id" in token) {
         session.user.id = token.id;
       }
+
+      // Buat accessToken (tidak diubah)
       const accessToken = jwt.sign(token, process.env.NEXTAUTH_SECRET || "", {
         algorithm: "HS256",
       });
       session.accessToken = accessToken;
+
       return session;
     },
   },

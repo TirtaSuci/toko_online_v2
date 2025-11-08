@@ -6,7 +6,9 @@ import { useSession } from "next-auth/react";
 const ProfilePage = () => {
   const [profile, setProfile] = useState({});
   const session: any = useSession();
-  console.log("profile =", profile);
+
+  console.log("session", session);
+  console.log("profile", profile);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -18,7 +20,7 @@ const ProfilePage = () => {
       }
     };
     getProfile();
-  }, [profile, session]); // tidak pakai [session] langsung
+  }, [profile, session]);
 
   return (
     <div>

@@ -8,7 +8,6 @@
   &__item {
     display: flex;
     flex-direction: column;
-    border: none;
     margin-bottom: 15px;
     gap: 5px;
   }
@@ -20,5 +19,13 @@
     padding: 10px;
     outline: none;
     border-radius: 3px;
+
+    &[type="number"]::-webkit-inner-spin-button,
+    &[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
   }
 }

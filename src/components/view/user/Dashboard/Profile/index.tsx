@@ -6,12 +6,13 @@ import Image from "next/image";
 import { uploadImage } from "@/lib/firebase/service";
 import { useState } from "react";
 import userServices from "@/Services/user";
-import { sendError } from "next/dist/server/api-utils";
+import { useSession } from "next-auth/react";
 
 const ProfileView = ({ profile, setProfile, session }: any) => {
   const [changeImage, setChangeImage] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState({});
+  const { update } = useSession();
+
   const handleChangeAvatar = (e: any) => {
     setIsLoading(true);
     e.preventDefault();
@@ -22,7 +23,6 @@ const ProfileView = ({ profile, setProfile, session }: any) => {
         file,
         async (status: boolean, newImageURL: string) => {
           if (status) {
-            console.log("newimage =>", newImageURL);
             const data = { image: newImageURL };
             const result = await userServices.updateProfile(
               profile.id,
@@ -40,6 +40,34 @@ const ProfileView = ({ profile, setProfile, session }: any) => {
           }
         }
       );
+    }
+  };
+  const handleChangeProfile = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const form = e.target as HTMLFormElement;
+    const data = {
+      fullname: form.fullname.value,
+      email: form.email.value,
+    };
+    const result = await userServices.updateProfile(
+      profile.id,
+      data,
+      session.data?.accessToken
+    );
+    if (result.status === 200) {
+      setIsLoading(false);
+      setProfile({ ...profile, fullname: data.fullname, email: data.email });
+      await update({
+        user: {
+          ...session.data.user,
+          fullname: data.fullname,
+          email: data.email,
+        },
+      });
+      form.reset();
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -106,7 +134,7 @@ const ProfileView = ({ profile, setProfile, session }: any) => {
         <div className={style.profile__main__details}>
           <div className={style.profile__main__details__title}>Data Profil</div>
           <div className={style.profile__main__details__data}>
-            <form action="">
+            <form onSubmit={handleChangeProfile}>
               <Input
                 label="Fullname"
                 name="fullname"
@@ -122,16 +150,18 @@ const ProfileView = ({ profile, setProfile, session }: any) => {
               <Input
                 label="Phone"
                 name="phone"
-                type="text"
+                type="number"
                 deafultValue={profile.phone}
               />
               <Input
-                label="Alamat"
-                name="address"
+                label="Role"
+                name="role"
                 type="text"
-                deafultValue={profile.address}
+                deafultValue={profile.role}
               />
-              <Button>Simpan</Button>
+              <Button type="submit">
+                {isLoading ? "Loading..." : "Simpan"}
+              </Button>
             </form>
           </div>
         </div>
