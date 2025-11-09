@@ -7,9 +7,6 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState({});
   const session: any = useSession();
 
-  console.log("session", session);
-  console.log("profile", profile);
-
   useEffect(() => {
     const getProfile = async () => {
       if (session.data?.accessToken && Object.keys(profile).length === 0) {

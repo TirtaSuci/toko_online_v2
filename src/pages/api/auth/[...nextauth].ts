@@ -49,6 +49,7 @@ const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.id = user.id;
         token.image = user.image;
+        token.phone = user.phone;
       }
 
       if (account?.provider === "google") {
@@ -58,6 +59,7 @@ const authOptions: NextAuthOptions = {
           image: user.image,
           type: `google`,
           role: `member`,
+          phone: user.phone,
         };
         await loginWithGoogle(data, (data: any) => {
           token.email = data.email;
@@ -65,6 +67,7 @@ const authOptions: NextAuthOptions = {
           token.image = data.image;
           token.role = data.role;
           token.id = data.id;
+          token.phone = data.phone;
         });
       }
       // --- 🔹 Tambahan penting: update token saat session.update() dipanggil
@@ -92,6 +95,9 @@ const authOptions: NextAuthOptions = {
       }
       if ("id" in token) {
         session.user.id = token.id;
+      }
+      if ("phone" in token) {
+        session.user.phone = token.phone;
       }
 
       // Buat accessToken (tidak diubah)

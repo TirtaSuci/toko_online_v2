@@ -1,0 +1,22 @@
+.profile {
+  &__main {
+    &__details {
+      width: 70%;
+      &__title {
+        font-size: large;
+        font-weight: bold;
+      }
+      &__data {
+        width: 100%;
+        border: 1px solid #000000;
+        margin-top: 10px;
+        padding: 10px 15px;
+
+        &__edit {
+          display: flex;
+          gap: 15px;
+        }
+      }
+    }
+  }
+}

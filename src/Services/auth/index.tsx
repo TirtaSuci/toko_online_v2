@@ -14,6 +14,7 @@ export async function signUp(
     password: string;
     image?: string;
     role: string;
+    phone?: string;
     updatedAt?: Date;
     createdAt?: Date;
   },
@@ -34,6 +35,7 @@ export async function signUp(
     if (!userData.role) {
       userData.role = "member";
     }
+    userData.phone = "";
     userData.image = "";
     userData.password = await bcrypt.hash(userData.password, 10);
     userData.createdAt = new Date();
@@ -70,6 +72,7 @@ export async function loginWithGoogle(
     type: string;
     role: string;
     image?: string;
+    phone?: string;
     updatedAt?: Date;
     createdAt?: Date;
   },
@@ -87,6 +90,7 @@ export async function loginWithGoogle(
   if (user.length > 0) {
     callback(user[0]);
   } else {
+    data.phone = "";
     data.role = "member";
     data.createdAt = new Date();
     data.updatedAt = new Date();
