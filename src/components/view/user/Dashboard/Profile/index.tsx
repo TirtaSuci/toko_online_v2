@@ -3,7 +3,7 @@ import AvatarView from "./Avatar";
 import DataProfileView from "./DataProfile";
 import style from "./Profile.module.scss";
 
-const ProfileView = ({ profile, setProfile, session }: any) => {
+const ProfileView = ({ profile, setProfile, session, setToaster }: any) => {
   return (
     <UserLayout>
       <h1>Profile Page</h1>
@@ -13,12 +13,14 @@ const ProfileView = ({ profile, setProfile, session }: any) => {
           profile={profile}
           setProfile={setProfile}
           session={session}
+          setToaster={setToaster}
         />
         <DataProfileView
           className={style.profile__data}
           profile={profile}
           setProfile={setProfile}
           session={session}
+          setToaster={setToaster}
         />
       </div>
     </UserLayout>

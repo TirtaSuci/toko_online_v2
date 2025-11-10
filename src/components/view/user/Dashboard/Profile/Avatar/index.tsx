@@ -6,7 +6,7 @@ import Image from "next/image";
 import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
 
-const AvatarView = ({ profile, setProfile, session }: any) => {
+const AvatarView = ({ profile, setProfile, session, setToaster }: any) => {
   const [changeImage, setChangeImage] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +30,10 @@ const AvatarView = ({ profile, setProfile, session }: any) => {
               setIsLoading(false);
               setProfile({ ...profile, image: newImageURL });
               setChangeImage({});
+              setToaster({
+                variant: "success",
+                message: "Profile image updated successfully",
+              });
               e.target[0].value = "";
             } else {
               setIsLoading(false);

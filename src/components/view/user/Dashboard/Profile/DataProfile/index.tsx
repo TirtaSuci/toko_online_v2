@@ -6,7 +6,7 @@ import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
 import Modal from "@/components/layouts/Modal";
 
-const DataProfileView = ({ profile, setProfile, session }: any) => {
+const DataProfileView = ({ profile, setProfile, session, setToaster }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const update = (session as any)?.update;
@@ -41,7 +41,12 @@ const DataProfileView = ({ profile, setProfile, session }: any) => {
           email: data.email,
         },
       });
+      setIsEditing(false);
       form.reset();
+      setToaster({
+        variant: "success",
+        message: "Profile updated successfully",
+      });
     } else {
       setIsLoading(false);
     }
@@ -193,6 +198,10 @@ const DataProfileView = ({ profile, setProfile, session }: any) => {
                           oldPassword: "",
                           newPassword: "",
                           confirmPassword: "",
+                        });
+                        setToaster({
+                          variant: "success",
+                          message: "Password berhasil diubah.",
                         });
                       } else {
                         alert(res.data?.message || "Gagal mengubah password");
