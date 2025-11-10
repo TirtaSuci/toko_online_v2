@@ -26,5 +26,14 @@ const userServices = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  changePassword: (
+    data: { userId: string; oldPassword: string; newPassword: string },
+    token: string
+  ) =>
+    instance.put(`/api/user/change-password`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 export default userServices;

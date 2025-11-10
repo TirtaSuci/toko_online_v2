@@ -12,9 +12,60 @@
         margin-top: 10px;
         padding: 10px 15px;
 
+        &__actions {
+          display: flex;
+          justify-content: space-between;
+        }
+
         &__edit {
           display: flex;
           gap: 15px;
+        }
+
+        .modalMain {
+          max-width: 320px;
+        }
+
+        /* Change Password modal styles */
+        .changePwModal {
+          //padding: 16px;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .changePwModal__body {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          &__input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            outline: none;
+          }
+        }
+
+        .changePwModal__body label {
+          font-size: 0.9rem;
+          color: #333;
+        }
+
+        .changePwModal__body Input {
+          padding: 8px 10px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          outline: none;
+        }
+
+        .changePwModal__actions {
+          display: flex;
+          gap: 8px;
+          justify-content: center;
+          margin-top: 6px;
         }
       }
     }
