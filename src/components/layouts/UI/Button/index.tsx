@@ -6,6 +6,7 @@ type PropsType = {
   onClick?: () => void;
   children?: React.ReactNode;
   className?: string;
+  disabled?: boolean;
 };
 
 const Button = (props: PropsType) => {
@@ -15,6 +16,7 @@ const Button = (props: PropsType) => {
       type={type || "button"}
       onClick={onClick}
       className={`${style.button} ${style[variant]} ${className}`}
+      disabled={props.disabled}
     >
       {children}
     </button>

@@ -6,6 +6,7 @@ import Navbar from "@/components/fragment/Navbar";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Toaster from "@/components/layouts/Toaster";
+import { AnimatePresence } from "motion/react";
 import React, { useEffect, useState } from "react";
 
 const roboto = Roboto({
@@ -28,7 +29,7 @@ export default function App({
     if (Object.keys(toaster).length > 0) {
       setTimeout(() => {
         setToaster({});
-      }, 3000);
+      }, 50000);
     }
   }, [toaster]);
 
@@ -47,13 +48,16 @@ export default function App({
       <div className={roboto.className}>
         {!disableNavbar.includes(router.pathname.split("/")[1]) && <Navbar />}
         <Component {...pageProps} setToaster={setToaster} />
-        {Object.keys(toaster || {}).length > 0 && (
-          <Toaster
-            variant={toaster?.variant}
-            message={toaster?.message}
-            setToaster={setToaster}
-          />
-        )}
+        <AnimatePresence initial={false}>
+          {Object.keys(toaster || {}).length > 0 && (
+            <Toaster
+              key={`${toaster?.variant}-${toaster?.message ?? ""}`}
+              variant={toaster?.variant}
+              message={toaster?.message}
+              setToaster={setToaster}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </SessionProvider>
   );

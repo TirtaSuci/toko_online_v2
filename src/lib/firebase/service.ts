@@ -71,28 +71,55 @@ export async function deleteData(
 }
 
 export async function uploadImage(id: string, image: any, callback: Function) {
-  if (image)
-    if (image.size < 1000000) {
-      const newName = `profile.` + image.name.split(".")[1];
-      const storageRef = ref(storage, `images/${id}/${newName}`);
-      const uploadTask = uploadBytesResumable(storageRef, image);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-        },
-        (error) => {
-          console.log(error);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+  // validate presence
+  if (!image) return callback(false, undefined, "No file provided");
+
+  // accept only image mime types
+  if (image.type && !image.type.startsWith("image/")) {
+    return callback(false, undefined, "File must be an image");
+  }
+
+  // limit to 1 MB
+  const MAX_SIZE = 1 * 1024 * 1024; // 1MB
+  if (typeof image.size === "number" && image.size > MAX_SIZE) {
+    return callback(false, undefined, "File size exceeds 1MB");
+  }
+
+  // proceed with upload
+  try {
+    const extIndex = (image.name || "").lastIndexOf(".");
+    const ext = extIndex > -1 ? (image.name || "").slice(extIndex + 1) : "jpg";
+    const newName = `profile.${ext}`;
+    const storageRef = ref(storage, `images/${id}/${newName}`);
+    const uploadTask = uploadBytesResumable(storageRef, image);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+      },
+      (error) => {
+        console.log(error);
+        return callback(false, undefined, error?.message || "Upload error");
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref)
+          .then((downloadURL) => {
             callback(true, downloadURL);
-          });
-        }
-      );
-    } else {
-      return callback(false);
-    }
+          })
+          .catch((err) =>
+            callback(
+              false,
+              undefined,
+              err?.message || "Failed to get download URL"
+            )
+          );
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    const e = err as { message?: string };
+    return callback(false, undefined, e.message || "Unexpected error");
+  }
 }

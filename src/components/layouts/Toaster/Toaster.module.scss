@@ -1,9 +1,9 @@
 .toaster {
   position: fixed;
-  bottom: 20px;
-  left: 50%;
+  top: 10px;
+  left: 40%;
+  z-index: 1000;
   transform: translateX(-50%);
-  padding: 10px 35px 10px 25px;
   border-radius: 10px;
   overflow: hidden;
 
@@ -21,11 +21,12 @@
 
   &__main {
     display: flex;
+    width: auto;
     align-items: center;
     justify-items: center;
     gap: 20px;
     background-color: white;
-    padding: 15px;
+    padding: 20px 45px 20px 20px;
     border-radius: 8px;
 
     &__icon {

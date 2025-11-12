@@ -39,8 +39,15 @@
         cursor: pointer;
       }
       &__button {
-        margin-top: -10px;
-        width: 75%;
+        display: flex;
+        width: 100%;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+
+        &__submit {
+          padding: 8px 12px;
+        }
       }
       label {
         margin-top: 10px;

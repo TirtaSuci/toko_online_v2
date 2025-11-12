@@ -18,7 +18,7 @@ const AvatarView = ({ profile, setProfile, session, setToaster }: any) => {
       uploadImage(
         profile.id,
         file,
-        async (status: boolean, newImageURL: string) => {
+        async (status: boolean, newImageURL?: string, message?: string) => {
           if (status) {
             const data = { image: newImageURL };
             const result = await userServices.updateProfile(
@@ -32,16 +32,38 @@ const AvatarView = ({ profile, setProfile, session, setToaster }: any) => {
               setChangeImage({});
               setToaster({
                 variant: "success",
-                message: "Profile image updated successfully",
+                message: "Profile picture updated successfully",
               });
-              e.target[0].value = "";
+              // clear file input safely
+              const inputEl = document.getElementById(
+                "upload_image"
+              ) as HTMLInputElement | null;
+              if (inputEl) inputEl.value = "";
             } else {
               setIsLoading(false);
+              setToaster?.({
+                variant: "error",
+                message: "Failed to update profile",
+              });
             }
+          } else {
+            setIsLoading(false);
+            setToaster?.({
+              variant: "error",
+              message: message || "Failed to upload image",
+            });
           }
         }
       );
     }
+  };
+
+  const handleImageCancel = () => {
+    setChangeImage({});
+    const inputEl = document.getElementById(
+      "upload_image"
+    ) as HTMLInputElement | null;
+    if (inputEl) inputEl.value = "";
   };
 
   return (
@@ -92,9 +114,21 @@ const AvatarView = ({ profile, setProfile, session, setToaster }: any) => {
           }}
         />
         {changeImage.name && (
-          <Button type="submit" className={style.profile__main__avatar__button}>
-            {isLoading ? "Loading..." : "Simpan Perubahan"}
-          </Button>
+          <div className={style.profile__main__avatar__button}>
+            <Button
+              type="submit"
+              className={style.profile__main__avatar__button_submit}
+            >
+              {isLoading ? "Loading..." : "Simpan"}
+            </Button>
+            <Button
+              type="button"
+              className={style.profile__main__avatar__button_cancel}
+              onClick={handleImageCancel}
+            >
+              Batal
+            </Button>
+          </div>
         )}
       </form>
     </div>
