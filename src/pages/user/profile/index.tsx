@@ -3,16 +3,20 @@ import { useEffect, useState } from "react";
 import userService from "@/Services/user";
 import { useSession } from "next-auth/react";
 
-const ProfilePage = ({ setToaster }: any) => {
-  const [profile, setProfile] = useState({});
-  const session: any = useSession();
+type PropsType = {
+  setToaster: (toaster: { variant: string; message: string }) => void;
+};
+
+const ProfilePage = ({ setToaster }: PropsType) => {
+  const [profile, setProfile] = useState<Record<string, unknown>>({});
+  const session = useSession();
 
   useEffect(() => {
     const getProfile = async () => {
-      if (session.data?.accessToken && Object.keys(profile).length === 0) {
-        const response = await userService.getProfile(
-          session.data?.accessToken
-        );
+      const token = (session.data as unknown as { accessToken?: string })
+        ?.accessToken;
+      if (token && Object.keys(profile).length === 0) {
+        const response = await userService.getProfile(token);
         setProfile(response.data.data);
       }
     };

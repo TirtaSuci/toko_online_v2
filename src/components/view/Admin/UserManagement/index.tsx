@@ -4,17 +4,20 @@ import style from "./UserManagement.module.scss";
 import { useEffect, useState } from "react";
 import ModalUpdateUser from "./ModalUpdateUSer";
 import ModalDeleteUser from "./ModalDeleteUser";
+import { user } from "@/types/user.type";
 
 type Propstype = {
-  users: any[];
-  setToaster?: (toaster: { variant: string; message: string }) => void;
+  users: user[] | [];
+  setToaster?: (
+    toaster: { variant: "success" | "error"; message?: string } | null
+  ) => void;
 };
 
 const UsersAdminView = (props: Propstype) => {
   const { users, setToaster } = props;
-  const [updateData, setUpdateData] = useState<any>({});
-  const [usersData, setUserData] = useState<any>([]);
-  const [deletedUser, setDeletedUser] = useState<any>([]);
+  const [updateData, setUpdateData] = useState<Partial<user> | null>(null);
+  const [usersData, setUserData] = useState<user[]>([]);
+  const [deletedUser, setDeletedUser] = useState<Partial<user> | null>(null);
 
   useEffect(() => {
     setUserData(users);
@@ -37,7 +40,7 @@ const UsersAdminView = (props: Propstype) => {
               </tr>
             </thead>
             <tbody>
-              {usersData.map((user: any, index: number) => (
+              {usersData.map((user: user, index: number) => (
                 <tr key={user.id}>
                   <td>{index + 1}</td>
                   <td>{user.id}</td>
@@ -68,7 +71,7 @@ const UsersAdminView = (props: Propstype) => {
           </table>
         </div>
       </AdminLayout>
-      {Object.keys(updateData).length > 0 && (
+      {updateData && Object.keys(updateData).length > 0 && (
         <ModalUpdateUser
           updateData={updateData}
           setUpdateData={setUpdateData}
@@ -76,7 +79,7 @@ const UsersAdminView = (props: Propstype) => {
           setToaster={setToaster}
         ></ModalUpdateUser>
       )}
-      {Object.keys(deletedUser).length > 0 && (
+      {deletedUser && Object.keys(deletedUser).length > 0 && (
         <ModalDeleteUser
           deletedUser={deletedUser}
           setDeletedUser={setDeletedUser}

@@ -8,7 +8,7 @@ type ProspType = {
 };
 const Modal = (props: ProspType) => {
   const { children, onClose, className } = props;
-  const ref: any = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {

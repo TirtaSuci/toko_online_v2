@@ -2,13 +2,21 @@ import { motion } from "motion/react";
 import style from "./Toaster.module.scss";
 import { useEffect, useRef, useState } from "react";
 
+type ToasterConfig = {
+  title: string;
+  message: string;
+  color: string;
+  barColor: string;
+  icon: string;
+};
+
 type PropsType = {
   variant?: "success" | "error" | "info";
   message?: string;
-  setToaster?: any;
+  setToaster?: (config: Record<string, unknown>) => void;
 };
 
-const toasterVariants: any = {
+const toasterVariants: Record<"success" | "error" | "info", ToasterConfig> = {
   success: {
     title: "Success",
     message: "Success Update Profile",
@@ -35,7 +43,7 @@ const toasterVariants: any = {
 const Toaster = (props: PropsType) => {
   const { variant = "success", message, setToaster } = props;
   const [lengthBar, setLengthBar] = useState(100);
-  const timerRef = useRef<any>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const startTimer = () => {
     timerRef.current = setInterval(() => {

@@ -1,36 +1,51 @@
 import { uploadImage } from "@/lib/firebase/service";
 import style from "./Avatar.module.scss";
-import { useState } from "react";
+import React, { useState } from "react";
 import userServices from "@/Services/user";
 import Image from "next/image";
 import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
+import { user } from "@/types/user.type";
 
-const AvatarView = ({ profile, setProfile, session, setToaster }: any) => {
-  const [changeImage, setChangeImage] = useState<any>({});
-  const [isLoading, setIsLoading] = useState(false);
+type PropsType = {
+  profile: {
+    id?: string;
+    image?: string;
+    name?: string;
+    fullname?: string;
+  } & Record<string, unknown>;
+  setProfile: (profile: Record<string, unknown>) => void;
+  session: {
+    data?: { accessToken?: string; user?: Record<string, unknown> };
+  } | null;
+  setToaster?: (toaster: { variant: string; message: string }) => void;
+};
 
-  const handleChangeAvatar = (e: any) => {
-    setIsLoading(true);
+const AvatarView = (props: PropsType) => {
+  const { profile, setProfile, session, setToaster } = props;
+  const [changeImage, setChangeImage] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleChangeAvatar = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const file = e.target[0]?.files[0];
+    setIsLoading(true);
+    const file = changeImage;
     if (file) {
       uploadImage(
-        profile.id,
+        (profile.id as string) || "",
         file,
         async (status: boolean, newImageURL?: string, message?: string) => {
           if (status) {
-            const data = { image: newImageURL };
+            const data = { image: newImageURL } as Partial<user>;
             const result = await userServices.updateProfile(
-              profile.id,
               data,
-              session.data?.accessToken
+              (session?.data?.accessToken as string) || ""
             );
             if (result.status === 200) {
               setIsLoading(false);
               setProfile({ ...profile, image: newImageURL });
-              setChangeImage({});
-              setToaster({
+              setChangeImage(null);
+              setToaster?.({
                 variant: "success",
                 message: "Profile picture updated successfully",
               });
@@ -59,7 +74,7 @@ const AvatarView = ({ profile, setProfile, session, setToaster }: any) => {
   };
 
   const handleImageCancel = () => {
-    setChangeImage({});
+    setChangeImage(null);
     const inputEl = document.getElementById(
       "upload_image"
     ) as HTMLInputElement | null;
@@ -89,7 +104,7 @@ const AvatarView = ({ profile, setProfile, session, setToaster }: any) => {
             </div>
           )}
         </label>
-        {changeImage.name ? (
+        {changeImage?.name ? (
           <p className={style.profile__main__avatar__label}>
             {changeImage.name}
           </p>
@@ -108,12 +123,13 @@ const AvatarView = ({ profile, setProfile, session, setToaster }: any) => {
           name="image"
           id="upload_image"
           type="file"
-          onChange={(e: any) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             e.preventDefault();
-            setChangeImage(e.currentTarget.files[0]);
+            const input = e.currentTarget;
+            setChangeImage(input.files?.[0] ?? null);
           }}
         />
-        {changeImage.name && (
+        {changeImage?.name && (
           <div className={style.profile__main__avatar__button}>
             <Button
               type="submit"

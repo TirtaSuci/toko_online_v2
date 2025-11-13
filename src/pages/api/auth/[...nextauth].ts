@@ -50,6 +50,7 @@ const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.image = user.image;
         token.phone = user.phone;
+        token.type = `credentials`;
       }
 
       if (account?.provider === "google") {
@@ -68,6 +69,7 @@ const authOptions: NextAuthOptions = {
           token.role = data.role;
           token.id = data.id;
           token.phone = data.phone;
+          token.type = `google`;
         });
       }
       // --- 🔹 Tambahan penting: update token saat session.update() dipanggil
@@ -98,6 +100,9 @@ const authOptions: NextAuthOptions = {
       }
       if ("phone" in token) {
         session.user.phone = token.phone;
+      }
+      if ("type" in token) {
+        session.user.type = token.type;
       }
 
       // Buat accessToken (tidak diubah)

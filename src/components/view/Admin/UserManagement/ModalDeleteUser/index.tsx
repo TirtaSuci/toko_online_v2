@@ -3,11 +3,12 @@ import Button from "@/components/layouts/UI/Button";
 import userServices from "@/Services/user";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { user } from "@/types/user.type";
 
 type ModalDeleteUserProps = {
-  deletedUser: { id?: string } | null;
-  setDeletedUser: (v: unknown) => void;
-  setUserData: (v: unknown) => void;
+  deletedUser: Partial<user> | null;
+  setDeletedUser: (v: Partial<user> | null) => void;
+  setUserData: (data: user[]) => void;
   setToaster?: (
     t: { variant: "success" | "error"; message?: string } | null
   ) => void;
@@ -41,7 +42,7 @@ const ModalDeleteUser = (props: ModalDeleteUserProps) => {
         }
 
         setToaster?.({ variant: "success", message: "User deleted." });
-        setDeletedUser({});
+        setDeletedUser(null);
       } else {
         const msg = res?.data?.message || "Failed to delete user";
         setToaster?.({ variant: "error", message: msg });
@@ -61,7 +62,7 @@ const ModalDeleteUser = (props: ModalDeleteUserProps) => {
   };
 
   return (
-    <Modal onClose={() => setDeletedUser({})}>
+    <Modal onClose={() => setDeletedUser(null)}>
       <h1>Are you sure</h1>
       <Button onClick={handleDelete} disabled={isLoading}>
         {isLoading ? "Loading..." : "Yes"}

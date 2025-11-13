@@ -6,15 +6,19 @@ import Button from "@/components/layouts/UI/Button";
 import { authService } from "@/Services/auth";
 import AuthLayout from "@/components/layouts/AuthLayout";
 
-const RegisterView = () => {
+const RegisterView = ({
+  setToaster,
+}: {
+  setToaster?: (
+    toaster: { variant: "success" | "error"; message?: string } | null
+  ) => void;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const { push } = useRouter();
 
   const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    setError("");
     const form = event.target as HTMLFormElement;
     const data = {
       fullname: form.fullname.value,
@@ -24,7 +28,10 @@ const RegisterView = () => {
     };
 
     if (data.password !== data.confirmPassword) {
-      setError("Passwords do not match.");
+      setToaster?.({
+        variant: "error",
+        message: "Passwords do not match.",
+      });
       setIsLoading(false);
       return;
     }
@@ -36,10 +43,17 @@ const RegisterView = () => {
     if (result.status === 200) {
       form.reset();
       setIsLoading(false);
-      alert("Registration successful. Please login.");
+      setToaster?.({
+        variant: "success",
+        message: "Registration successful. Please login.",
+      });
       push("/auth/login");
     } else {
-      setError("Email already exists.");
+      setToaster?.({
+        variant: "error",
+        message:
+          result.data?.message || "Registration failed. Please try again.",
+      });
       setIsLoading(false);
     }
   };
@@ -50,7 +64,6 @@ const RegisterView = () => {
       link="/auth/login"
       linkText="Already have an account? "
       textLink="Login"
-      error={error}
     >
       <form onSubmit={handleRegister}>
         <Input label="Fullname" name="fullname"></Input>

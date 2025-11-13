@@ -1,8 +1,9 @@
 import instance from "@/lib/axios/instance";
+import { user } from "@/types/user.type";
 
 const userServices = {
   getAllUsers: () => instance.get("/api/user"),
-  updateServices: (id: string, data: any, token: string) =>
+  updateServices: (id: string, data: Partial<user>, token: string) =>
     instance.put(`/api/user?user=${id}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -20,8 +21,8 @@ const userServices = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  updateProfile: (id: string, data: any, token: string) =>
-    instance.put(`/api/user/profile/${id}`, data, {
+  updateProfile: (data: Partial<user>, token: string) =>
+    instance.put(`/api/user/profile`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

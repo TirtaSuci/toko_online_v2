@@ -1,22 +1,28 @@
 import { useState, FormEvent } from "react";
 import style from "./DataProfile.module.scss";
-// session passed as prop from parent
 import userServices from "@/Services/user";
 import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
-import Modal from "@/components/layouts/Modal";
+import ResetPasswordView from "../ResetPassword";
 
-const DataProfileView = ({ profile, setProfile, session, setToaster }: any) => {
+const DataProfileView = ({
+  profile,
+  setProfile,
+  session,
+  setToaster,
+}: {
+  profile: any;
+  setProfile: (profile: any) => void;
+  session: any;
+  setToaster?: (toaster: {
+    variant: "success" | "error";
+    message: string;
+  }) => void;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const update = (session as any)?.update;
   const [showChangePw, setShowChangePw] = useState(false);
-  const [pwForm, setPwForm] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [isPwLoading, setIsPwLoading] = useState(false);
 
   const handleChangeProfile = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,25 +31,31 @@ const DataProfileView = ({ profile, setProfile, session, setToaster }: any) => {
     const data = {
       fullname: form.fullname.value,
       email: form.email.value,
+      phone: form.phone.value,
     };
     const result = await userServices.updateProfile(
-      profile.id,
       data,
       session.data?.accessToken
     );
     if (result.status === 200) {
       setIsLoading(false);
-      setProfile({ ...profile, fullname: data.fullname, email: data.email });
+      setProfile({
+        ...profile,
+        fullname: data.fullname,
+        email: data.email,
+        phone: data.phone,
+      });
       await update({
         user: {
           ...session.data.user,
           fullname: data.fullname,
           email: data.email,
+          phone: data.phone,
         },
       });
       setIsEditing(false);
       form.reset();
-      setToaster({
+      setToaster?.({
         variant: "success",
         message: "Profile updated successfully",
       });
@@ -121,111 +133,24 @@ const DataProfileView = ({ profile, setProfile, session, setToaster }: any) => {
                 </Button>
               </div>
             )}
-            <Button
-              type="button"
-              onClick={() => setShowChangePw(true)}
-              className={style.profile__main__details__data__button}
-            >
-              Ganti Password
-            </Button>
+            {(session?.user as any)?.type !== "google" && (
+              <Button
+                type="button"
+                onClick={() => setShowChangePw(true)}
+                className={style.profile__main__details__data__button}
+              >
+                Ganti Password
+              </Button>
+            )}
           </div>
         </form>
-        {showChangePw && (
-          <Modal
-            className={style.modalMain}
-            onClose={() => setShowChangePw(false)}
-          >
-            <div className={style.changePwModal}>
-              <h3>Ganti Password</h3>
-              <div className={style.changePwModal__body}>
-                <label>Password Lama</label>
-                <Input
-                  type="password"
-                  value={pwForm.oldPassword}
-                  onChange={(e) =>
-                    setPwForm((p) => ({ ...p, oldPassword: e.target.value }))
-                  }
-                />
-                <label>Password Baru</label>
-                <Input
-                  type="password"
-                  value={pwForm.newPassword}
-                  onChange={(e) =>
-                    setPwForm((p) => ({ ...p, newPassword: e.target.value }))
-                  }
-                />
-                <label>Konfirmasi Password Baru</label>
-                <Input
-                  type="password"
-                  value={pwForm.confirmPassword}
-                  onChange={(e) =>
-                    setPwForm((p) => ({
-                      ...p,
-                      confirmPassword: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className={style.changePwModal__actions}>
-                <Button
-                  type="button"
-                  onClick={async () => {
-                    // client-side validation
-                    if (!pwForm.oldPassword || !pwForm.newPassword) {
-                      alert("Lengkapi field password");
-                      return;
-                    }
-                    if (pwForm.newPassword !== pwForm.confirmPassword) {
-                      alert("Konfirmasi password tidak cocok");
-                      return;
-                    }
-                    setIsPwLoading(true);
-                    try {
-                      const token = session?.data?.accessToken;
-                      const payload = {
-                        userId: profile.id,
-                        oldPassword: pwForm.oldPassword,
-                        newPassword: pwForm.newPassword,
-                      };
-                      const res = await userServices.changePassword(
-                        payload,
-                        token
-                      );
-                      if (res.status === 200) {
-                        alert("Password berhasil diubah.");
-                        setShowChangePw(false);
-                        setPwForm({
-                          oldPassword: "",
-                          newPassword: "",
-                          confirmPassword: "",
-                        });
-                        setToaster({
-                          variant: "success",
-                          message: "Password berhasil diubah.",
-                        });
-                      } else {
-                        alert(res.data?.message || "Gagal mengubah password");
-                      }
-                    } catch (err) {
-                      console.error(err);
-                      alert(
-                        (err as any)?.response?.data?.message ||
-                          "Terjadi kesalahan"
-                      );
-                    } finally {
-                      setIsPwLoading(false);
-                    }
-                  }}
-                >
-                  {isPwLoading ? "Loading..." : "Simpan"}
-                </Button>
-                <Button type="button" onClick={() => setShowChangePw(false)}>
-                  Batal
-                </Button>
-              </div>
-            </div>
-          </Modal>
-        )}
+        <ResetPasswordView
+          isOpen={showChangePw}
+          onClose={() => setShowChangePw(false)}
+          profile={profile}
+          session={session}
+          setToaster={setToaster}
+        />
       </div>
     </div>
   );

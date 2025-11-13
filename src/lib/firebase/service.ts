@@ -100,7 +100,6 @@ export async function uploadImage(id: string, image: any, callback: Function) {
         console.log("Upload is " + progress + "% done");
       },
       (error) => {
-        console.log(error);
         return callback(false, undefined, error?.message || "Upload error");
       },
       () => {

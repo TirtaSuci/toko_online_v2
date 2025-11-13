@@ -6,7 +6,13 @@ import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
 import AuthLayout from "@/components/layouts/AuthLayout";
 
-const LoginView = () => {
+const LoginView = ({
+  setToaster,
+}: {
+  setToaster?: (
+    toaster: { variant: "success" | "error"; message?: string } | null
+  ) => void;
+}) => {
   const [isLoading, setIsloading] = useState(false);
   const [error, setError] = useState("");
   const { push, query } = useRouter();
@@ -29,15 +35,25 @@ const LoginView = () => {
       if (!res?.error) {
         setIsloading(false);
         form.reset();
+        setToaster?.({
+          variant: "success",
+          message: "Login successful",
+        });
         push(callbackUrl);
       } else {
         setIsloading(false);
-        setError("Invalid email or password");
+        setToaster?.({
+          variant: "error",
+          message: "Invalid email or password",
+        });
       }
     } catch (err) {
       console.error(err);
       setIsloading(false);
-      setError("Something went wrong. Please try again.");
+      setToaster?.({
+        variant: "error",
+        message: "Something went wrong. Please try again.",
+      });
     }
   };
 

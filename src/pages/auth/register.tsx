@@ -1,9 +1,15 @@
 import RegisterView from "@/components/view/auth/Register";
 
-const RegisterPage = () => {
+const RegisterPage = ({
+  setToaster,
+}: {
+  setToaster?: (
+    toaster: { variant: "success" | "error"; message?: string } | null
+  ) => void;
+}) => {
   return (
     <>
-      <RegisterView></RegisterView>;
+      <RegisterView setToaster={setToaster}></RegisterView>;
     </>
   );
 };

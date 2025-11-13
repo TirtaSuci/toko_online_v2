@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { retriveDataById, updateData } from "@/lib/firebase/service";
+import { user } from "@/types/user.type";
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,14 +29,11 @@ export default async function handler(
   const token = req.headers.authorization?.split(" ")[1] || "";
 
   try {
-    const decoded: any = await new Promise((resolve, reject) => {
-      jwt.verify(token, process.env.NEXTAUTH_SECRET || "", (err, decoded) => {
-        if (err) return reject(err);
-        resolve(decoded);
-      });
-    });
+    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET || "") as
+      | JwtPayload
+      | string;
 
-    if (!decoded) {
+    if (!decoded || typeof decoded === "string") {
       return res
         .status(403)
         .json({ status: false, statusCode: 403, message: "Forbidden" });
@@ -48,7 +46,10 @@ export default async function handler(
         .json({ status: false, statusCode: 403, message: "Not allowed" });
     }
 
-    const userData: any = await retriveDataById("users", userId);
+    const userData = (await retriveDataById(
+      "users",
+      userId
+    )) as Partial<user> | null;
     if (!userData) {
       return res
         .status(404)
@@ -56,7 +57,10 @@ export default async function handler(
     }
 
     // verify old password
-    const isValid = await bcrypt.compare(oldPassword, userData.password || "");
+    const isValid = await bcrypt.compare(
+      oldPassword,
+      (userData.password as string) || ""
+    );
     if (!isValid) {
       return res.status(401).json({
         status: false,
@@ -67,7 +71,7 @@ export default async function handler(
 
     // hash new password and update
     const hashed = await bcrypt.hash(newPassword, 10);
-    const result: any = await new Promise((resolve) => {
+    const result = await new Promise<boolean>((resolve) => {
       updateData(
         "users",
         userId,
@@ -89,7 +93,7 @@ export default async function handler(
       statusCode: 400,
       message: "Failed to update password",
     });
-  } catch (err) {
+  } catch {
     return res.status(500).json({
       status: false,
       statusCode: 500,

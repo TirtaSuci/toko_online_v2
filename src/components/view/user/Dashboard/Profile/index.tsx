@@ -3,20 +3,27 @@ import AvatarView from "./Avatar";
 import DataProfileView from "./DataProfile";
 import style from "./Profile.module.scss";
 
-const ProfileView = ({ profile, setProfile, session, setToaster }: any) => {
+type PropsType = {
+  profile: Record<string, unknown>;
+  setProfile: (profile: Record<string, unknown>) => void;
+  session: Record<string, unknown>;
+  setToaster?: (toaster: { variant: string; message: string }) => void;
+};
+
+const ProfileView = (props: PropsType) => {
+  const { profile, setProfile, session, setToaster } = props;
+
   return (
     <UserLayout>
       <h1>Profile Page</h1>
       <div className={style.profile}>
         <AvatarView
-          className={style.profile__avatar}
           profile={profile}
           setProfile={setProfile}
           session={session}
           setToaster={setToaster}
         />
         <DataProfileView
-          className={style.profile__data}
           profile={profile}
           setProfile={setProfile}
           session={session}
