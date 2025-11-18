@@ -1,0 +1,63 @@
+.Users {
+  &__table {
+    width: 100%;
+    //border-spacing: 0;
+    //border-collapse: collapse;
+    //border: 1px solid #ccc;
+    margin-top: 40px;
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      //border: 1px solid #ccc;
+      text-align: center;
+    }
+    thead {
+      tr {
+        background-color: #b9b9b9;
+      }
+    }
+    tr:nth-child(even) {
+      background-color: #ffffff;
+    }
+
+    &__action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      &__button {
+        background-color: #000000;
+        color: #ffffff;
+        cursor: pointer;
+        border: none;
+        border: 1px solid #000000;
+
+        &__edit {
+          background-color: #5980d4e8;
+          border: 1px solid #5980d4e8;
+          font-size: 20px;
+        }
+
+        &__edit:hover {
+          background-color: #1f4596e8;
+          border: 1px solid #5980d4e8;
+          transform: 0.3s;
+        }
+
+        &__delete {
+          background-color: #ca3030;
+          border: 1px solid #ca3030;
+          font-size: 20px;
+        }
+
+        &__delete:hover {
+          background-color: #971717;
+          border: 1px solid #ca3030;
+          transform: 0.3s;
+        }
+      }
+    }
+  }
+}

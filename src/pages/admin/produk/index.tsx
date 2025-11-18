@@ -1,13 +1,22 @@
-import AdminLayout from "@/components/layouts/AdminLayout";
+import ProductAdminView from "@/components/view/Admin/Produk";
+import productServices from "@/Services/products";
+import { useEffect, useState } from "react";
 
-const ProdukIndex = () => {
+const ProdukPage = () => {
+  const [products, setProducts] = useState([]);
+
+  const getAllProducts = async () => {
+    const response = await productServices.getAllProducts();
+    setProducts(response.data.data);
+  };
+
+  useEffect(() => {
+    getAllProducts();
+  }, []);
   return (
     <div>
-      <AdminLayout>
-        <h1>Produk Page</h1>
-      </AdminLayout>
+      <ProductAdminView products={products}></ProductAdminView>
     </div>
   );
 };
-
-export default ProdukIndex;
+export default ProdukPage;
