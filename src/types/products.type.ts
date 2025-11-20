@@ -6,10 +6,12 @@ export type products = {
   price: number;
   discountPercentage: number;
   rating: number;
-  stock: {
-    size: string;
-    qty: number;
-  }[];
+  stock: [
+    {
+      size: string;
+      qty: number;
+    }
+  ];
   brand: string;
   category: string;
   thumbnail: string;

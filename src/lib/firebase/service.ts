@@ -7,6 +7,7 @@ import {
   getDocs,
   getFirestore,
   updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import app from "./init";
 import {
@@ -59,6 +60,27 @@ export async function updateData(
     callback(false);
   }
 }
+
+export function listenToCollection(
+  collectionName: string,
+  callback: (data: Array<{ id: string; [key: string]: any }>) => void
+) {
+  const unsubscribe = onSnapshot(
+    collection(firestore, collectionName),
+    (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      callback(data);
+    },
+    (error) => {
+      console.error("Error listening to collection:", error);
+    }
+  );
+  return unsubscribe;
+}
+
 export async function deleteData(
   collectionName: string,
   id: string,

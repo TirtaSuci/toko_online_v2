@@ -12,10 +12,11 @@ type Propstype = {
   defaultValue?: string;
   disabled?: boolean;
   options?: Option[];
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 
 const Select = (props: Propstype) => {
-  const { label, name, defaultValue, options, disabled } = props;
+  const { label, name, defaultValue, options, disabled, onChange } = props;
   return (
     <div className={style.form__item}>
       {label && <label htmlFor={name}>{label}</label>}
@@ -23,7 +24,9 @@ const Select = (props: Propstype) => {
         name={name}
         id={name}
         defaultValue={defaultValue}
+        value={props.value}
         disabled={disabled}
+        onChange={onChange}
         className={style.form__select}
       >
         {options?.map((option) => (

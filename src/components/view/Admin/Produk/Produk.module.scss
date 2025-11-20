@@ -1,10 +1,34 @@
 .Users {
+  &__tableContainer {
+    border: 1px solid #ccc;
+    height: 83vh;
+    margin-top: 20px;
+  }
+
+  &__buttonAdd {
+    position: fixed;
+    top: 30px;
+    right: 40px;
+    padding: 10px 15px;
+    background-color: #5980d4e8;
+    border: 1px solid #5980d4e8;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 6px;
+
+    &:hover {
+      background-color: #1f4596e8;
+      border: 1px solid #5980d4e8;
+      transform: 0.3s;
+    }
+  }
   &__table {
     width: 100%;
     //border-spacing: 0;
     //border-collapse: collapse;
     //border: 1px solid #ccc;
-    margin-top: 40px;
+    //margin-top: 40px;
     th,
     td {
       padding: 10px;

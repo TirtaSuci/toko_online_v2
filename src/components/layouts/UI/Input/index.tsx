@@ -6,10 +6,10 @@ type Propstype = {
   id?: string;
   type?: string;
   placeholder?: string;
-  deafultValue?: string;
+  deafultValue?: string | number;
   disabled?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value?: string;
+  value?: string | number;
 };
 
 const Input = (props: Propstype) => {
