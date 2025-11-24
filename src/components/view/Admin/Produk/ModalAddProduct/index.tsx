@@ -5,10 +5,11 @@ import Select from "@/components/layouts/UI/Select/indext";
 import { products } from "@/types/products.type";
 import { Dispatch, SetStateAction, useState } from "react";
 import style from "./ModalAddProduct.module.scss";
+import InputFile from "@/components/layouts/UI/InputFile";
 
 type PropsType = {
-  addProduct: Dispatch<SetStateAction<boolean>>;
-  setAddProduct: Dispatch<SetStateAction<products[]>>;
+  setProductsData: Dispatch<SetStateAction<products[]>>;
+  setAddProduct: Dispatch<SetStateAction<boolean>>;
   setToaster?: (
     t: { variant: "success" | "error"; message?: string } | null
   ) => void;
@@ -17,9 +18,10 @@ type PropsType = {
 };
 
 const ModalAddProduct = (props: PropsType) => {
-  const { addProduct, setAddProduct, setToaster } = props;
+  const { setProductsData, setAddProduct, setToaster } = props;
   const [stockCount, setStockCount] = useState([{ size: "", qty: 0 }]);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -31,12 +33,15 @@ const ModalAddProduct = (props: PropsType) => {
     setStockCount(newStockCount);
   };
   return (
-    <Modal onClose={() => {}}>
-      <>
-        <h1>Add Product</h1>
+    <Modal
+      onClose={() => {
+        setAddProduct(false);
+      }}
+    >
+      <h1>Add Product</h1>
+      <div className={style.header}>
         <form action="">
           <Input label="Nama Produk" name="name" />
-          <Input label="Image" name="image" />
           <Select
             label="Status"
             name="status"
@@ -71,13 +76,33 @@ const ModalAddProduct = (props: PropsType) => {
               </div>
             </div>
           ))}
-          <Button
-            className={style.form__button__add}
-            type="button"
-            onClick={() => setStockCount([...stockCount, { size: "", qty: 0 }])}
-          >
-            Add Stock
-          </Button>
+          <div className={style.form__button}>
+            <Button
+              className={style.form__button__add}
+              type="button"
+              onClick={() =>
+                setStockCount([...stockCount, { size: "", qty: 0 }])
+              }
+            >
+              Add Stock
+            </Button>
+            {stockCount.length > 1 && (
+              <Button
+                className={style.form__button__remove}
+                type="button"
+                onClick={() =>
+                  setStockCount(stockCount.slice(0, stockCount.length - 1))
+                }
+              >
+                Remove Stock
+              </Button>
+            )}
+          </div>
+          <InputFile
+            name="image"
+            setUploadedImage={setUploadedImage}
+            uploadedImage={uploadedImage}
+          />
           <Button
             className={style.form__button__submit}
             type="submit"
@@ -86,7 +111,7 @@ const ModalAddProduct = (props: PropsType) => {
             {isLoading ? "Uploading..." : "Add Data"}
           </Button>
         </form>
-      </>
+      </div>
     </Modal>
   );
 };

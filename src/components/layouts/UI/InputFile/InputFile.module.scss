@@ -1,0 +1,21 @@
+.inputFile {
+  &__label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    margin: 15px 0;
+    background-color: #cfcfcf;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    cursor: pointer;
+  }
+  &__input {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+  }
+}

@@ -130,9 +130,8 @@ const ProductAdminView = (props: Propstype) => {
       )}
       {addProduct && (
         <ModalAddProduct
-          addProduct={addProduct}
           setAddProduct={setAddProduct}
-          setUserData={setProductsData}
+          setProductsData={setProductsData}
           setToaster={setToaster}
         />
       )}
