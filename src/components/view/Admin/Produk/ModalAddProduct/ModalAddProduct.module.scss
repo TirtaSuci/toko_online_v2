@@ -1,21 +1,28 @@
 .header {
-  margin-top: 5px;
+  margin-top: 10px;
   max-height: 70vh;
   overflow-y: auto;
 }
 .form {
+  &__stockContainer {
+  }
   &__stock {
     display: flex;
     width: 100%;
     gap: 10px;
     &__item {
       width: 100%;
-      gap: 30px;
+      margin-bottom: -10px;
+      margin-top: 5px;
+      :nth-child(1) {
+        margin-top: 0px;
+      }
     }
   }
   &__button {
     display: flex;
     gap: 10px;
+    margin-top: 10px;
     &__add {
       display: flex;
       justify-content: center;

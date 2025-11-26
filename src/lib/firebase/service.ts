@@ -92,27 +92,28 @@ export async function deleteData(
     .catch(() => callback(false));
 }
 
-export async function uploadImage(id: string, image: any, callback: Function) {
-  // validate presence
+export async function uploadImage(
+  id: string,
+  image: any,
+  newName: string,
+  collectionName: string,
+  callback: Function
+) {
   if (!image) return callback(false, undefined, "No file provided");
-
-  // accept only image mime types
   if (image.type && !image.type.startsWith("image/")) {
     return callback(false, undefined, "File must be an image");
   }
-
-  // limit to 1 MB
   const MAX_SIZE = 1 * 1024 * 1024; // 1MB
   if (typeof image.size === "number" && image.size > MAX_SIZE) {
     return callback(false, undefined, "File size exceeds 1MB");
   }
-
-  // proceed with upload
   try {
     const extIndex = (image.name || "").lastIndexOf(".");
     const ext = extIndex > -1 ? (image.name || "").slice(extIndex + 1) : "jpg";
-    const newName = `profile.${ext}`;
-    const storageRef = ref(storage, `images/${id}/${newName}`);
+    const storageRef = ref(
+      storage,
+      `images/${collectionName}/${id}/${newName}.${ext}`
+    );
     const uploadTask = uploadBytesResumable(storageRef, image);
     uploadTask.on(
       "state_changed",
