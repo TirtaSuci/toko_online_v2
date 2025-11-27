@@ -22,8 +22,6 @@ const ProductAdminView = (props: Propstype) => {
   const [productsData, setProductsData] = useState<products[]>([]);
   const [addProduct, setAddProduct] = useState(false);
 
-  console.log(products);
-
   useEffect(() => {
     // Set up real-time listener for products collection
     const unsubscribe = listenToCollection("products", (data) => {

@@ -72,7 +72,6 @@ export default async function handler(
       }
 
       const userId = decoded.id as string;
-      // updateData uses a callback; wrap it into a Promise so we can await it
       const success = await new Promise<boolean>((resolve) => {
         updateData("users", userId, data, (result: boolean) => {
           resolve(result);

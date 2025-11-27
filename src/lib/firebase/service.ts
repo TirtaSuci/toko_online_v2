@@ -108,11 +108,11 @@ export async function uploadImage(
     return callback(false, undefined, "File size exceeds 1MB");
   }
   try {
-    const extIndex = (image.name || "").lastIndexOf(".");
-    const ext = extIndex > -1 ? (image.name || "").slice(extIndex + 1) : "jpg";
+    //const extIndex = (image.name || "").lastIndexOf(".");
+    //const ext = extIndex > -1 ? (image.name || "").slice(extIndex + 1) : "jpg";
     const storageRef = ref(
       storage,
-      `images/${collectionName}/${id}/${newName}.${ext}`
+      `images/${collectionName}/${id}/${newName}`
     );
     const uploadTask = uploadBytesResumable(storageRef, image);
     uploadTask.on(

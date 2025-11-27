@@ -36,7 +36,7 @@ const ModalAddProduct = (props: PropsType) => {
   };
 
   const uploadImages = (id: string, form: any) => {
-    const file = form.image.target.files[0];
+    const file = form.image.files[0];
     const newName = `product.${file.name.split(".")[1]}`;
     if (file) {
       uploadImage(
@@ -44,10 +44,11 @@ const ModalAddProduct = (props: PropsType) => {
         file,
         newName,
         "products",
-        async (status: boolean, newImageURL?: string) => {
+        async (status: boolean, downloadURL: string) => {
           if (status) {
-            const data = { image: newImageURL };
-            const result = await productServices.updateServices(
+            const data = { image: downloadURL };
+            console.log("data =", data);
+            const result = await productServices.addImage(
               id,
               data,
               session?.data?.accessToken
@@ -57,6 +58,8 @@ const ModalAddProduct = (props: PropsType) => {
               setUploadedImage(null);
               form.reset();
               setAddProduct(false);
+              const { data } = await productServices.getAllProducts();
+              setProductsData(data.data);
               setToaster?.({
                 variant: "success",
                 message: "Product updated successfully",
@@ -98,6 +101,12 @@ const ModalAddProduct = (props: PropsType) => {
       setToaster?.({
         variant: "success",
         message: "Product added successfully",
+      });
+    } else {
+      setIsLoading(false);
+      setToaster?.({
+        variant: "error",
+        message: "Failed to add product",
       });
     }
   };
