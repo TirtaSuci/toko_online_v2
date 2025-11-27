@@ -35,59 +35,75 @@ const ModalAddProduct = (props: PropsType) => {
     setStockCount(newStockCount);
   };
 
-  const uploadImages = (id: string, form: any) => {
-    const file = form.image.files[0];
-    const newName = `product.${file.name.split(".")[1]}`;
-    if (file) {
-      uploadImage(
-        id,
-        file,
-        newName,
-        "products",
-        async (status: boolean, downloadURL: string) => {
-          if (status) {
-            const data = { image: downloadURL };
-            console.log("data =", data);
-            const result = await productServices.addImage(
-              id,
-              data,
-              session?.data?.accessToken
-            );
-            if (result.status === 200) {
-              setIsLoading(false);
-              setUploadedImage(null);
-              form.reset();
-              setAddProduct(false);
-              const { data } = await productServices.getAllProducts();
-              setProductsData(data.data);
-              setToaster?.({
-                variant: "success",
-                message: "Product updated successfully",
-              });
-            } else {
-              setIsLoading(false);
-              setToaster?.({
-                variant: "error",
-                message: "Failed to update product",
-              });
-            }
-          }
-        }
-      );
-    }
-  };
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     const form = e.target as HTMLFormElement;
+
+    // Validate required fields
+    if (!form.nama.value.trim()) {
+      setToaster?.({ variant: "error", message: "Nama produk harus diisi" });
+      setIsLoading(false);
+      return;
+    }
+    if (!form.category.value.trim()) {
+      setToaster?.({ variant: "error", message: "Kategori harus diisi" });
+      setIsLoading(false);
+      return;
+    }
+    if (!form.harga.value || Number(form.harga.value) <= 0) {
+      setToaster?.({ variant: "error", message: "Harga harus lebih dari 0" });
+      setIsLoading(false);
+      return;
+    }
+    if (!uploadedImage) {
+      setToaster?.({ variant: "error", message: "Gambar harus dipilih" });
+      setIsLoading(false);
+      return;
+    }
+    if (stockCount.some((item) => !item.size || item.qty <= 0)) {
+      setToaster?.({
+        variant: "error",
+        message: "Semua size dan quantity harus diisi dengan benar",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    // Upload image first if provided, get download URL
+    let imageUrl = "";
+    if (uploadedImage) {
+      const newName = `product.${uploadedImage.name.split(".")[1]}`;
+      imageUrl = await new Promise<string>((resolve) => {
+        uploadImage(
+          "temp",
+          uploadedImage,
+          newName,
+          "products",
+          (status: boolean, downloadURL: string) => {
+            if (!status) {
+              setToaster?.({
+                variant: "error",
+                message: "Gagal upload gambar",
+              });
+            }
+            resolve(status ? downloadURL : "");
+          }
+        );
+      });
+      if (!imageUrl) {
+        setIsLoading(false);
+        return;
+      }
+    }
+
     const data = {
       name: form.nama.value,
       category: form.category.value,
       price: form.harga.value,
       status: form.status.value,
       stock: stockCount,
-      image: "",
+      image: imageUrl,
     };
     const result = await productServices.addProducts(
       data,
@@ -95,18 +111,22 @@ const ModalAddProduct = (props: PropsType) => {
     );
     if (result.status === 200) {
       setIsLoading(false);
-      uploadImages(result.data.data.id, form);
       setProductsData((prev) => [...prev, result.data.data]);
       setAddProduct(false);
+      form.reset();
+      setUploadedImage(null);
+      setStockCount([{ size: "", qty: 0 }]);
       setToaster?.({
         variant: "success",
-        message: "Product added successfully",
+        message: "Produk dan gambar berhasil ditambahkan",
       });
+      const { data: productsData } = await productServices.getAllProducts();
+      setProductsData(productsData.data);
     } else {
       setIsLoading(false);
       setToaster?.({
         variant: "error",
-        message: "Failed to add product",
+        message: "Gagal menambahkan produk",
       });
     }
   };

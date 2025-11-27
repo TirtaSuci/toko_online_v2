@@ -57,56 +57,65 @@ const ProductAdminView = (props: Propstype) => {
                 </tr>
               </thead>
               <tbody>
-                {productsData.map((product: products, index: number) => (
-                  <Fragment key={product.id}>
-                    <tr>
-                      <td rowSpan={product.stock.length}>{index + 1}</td>
-                      <td rowSpan={product.stock.length}>
-                        <Image
-                          src={product.image || "/image/deafult.jpg"}
-                          alt={product.name}
-                          width={100}
-                          height={100}
-                        />
-                      </td>
-                      <td rowSpan={product.stock.length}>{product.name}</td>
-                      <td rowSpan={product.stock.length}>{product.category}</td>
-                      <td rowSpan={product.stock.length}>
-                        {converIDR(product.price)}
-                      </td>
-                      <td>{product.stock[0].size}</td>
-                      <td>{product.stock[0].qty}</td>
-                      <td rowSpan={product.stock.length}>
-                        <div className={style.Users__table__action}>
-                          <Button
-                            type="button"
-                            className={style.Users__table__action__button__edit}
-                            onClick={() => setUpdateData(product)}
-                          >
-                            <i className="bx bxs-edit" />
-                          </Button>
-                          <Button
-                            type="button"
-                            className={
-                              style.Users__table__action__button__delete
-                            }
-                            disabled
-                          >
-                            <i className="bx bxs-trash" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                    {product.stock
-                      .slice(1)
-                      .map((stock: { size: string; qty: number }) => (
-                        <tr key={stock.size}>
-                          <td>{stock.size}</td>
-                          <td>{stock.qty}</td>
-                        </tr>
-                      ))}
-                  </Fragment>
-                ))}
+                {productsData.map((product: products, index: number) => {
+                  const stockArray = Array.isArray(product.stock)
+                    ? product.stock
+                    : [];
+                  const stockLength =
+                    stockArray.length > 0 ? stockArray.length : 1;
+                  return (
+                    <Fragment key={product.id}>
+                      <tr>
+                        <td rowSpan={stockLength}>{index + 1}</td>
+                        <td rowSpan={stockLength}>
+                          <Image
+                            src={product.image || "/image/deafult.jpg"}
+                            alt={product.name}
+                            width={100}
+                            height={100}
+                          />
+                        </td>
+                        <td rowSpan={stockLength}>{product.name}</td>
+                        <td rowSpan={stockLength}>{product.category}</td>
+                        <td rowSpan={stockLength}>
+                          {converIDR(product.price)}
+                        </td>
+                        <td>{stockArray[0]?.size || "-"}</td>
+                        <td>{stockArray[0]?.qty || "-"}</td>
+                        <td rowSpan={stockLength}>
+                          <div className={style.Users__table__action}>
+                            <Button
+                              type="button"
+                              className={
+                                style.Users__table__action__button__edit
+                              }
+                              onClick={() => setUpdateData(product)}
+                            >
+                              <i className="bx bxs-edit" />
+                            </Button>
+                            <Button
+                              type="button"
+                              className={
+                                style.Users__table__action__button__delete
+                              }
+                              disabled
+                            >
+                              <i className="bx bxs-trash" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                      {stockArray
+                        .slice(1)
+                        .map((stock: { size: string; qty: number }) => (
+                          <tr key={stock.size}>
+                            <td>{stock.size}</td>
+                            <td>{stock.qty}</td>
+                          </tr>
+                        ))}
+                    </Fragment>
+                  );
+                })}
               </tbody>
             </table>
             <Button

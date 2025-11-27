@@ -11,16 +11,16 @@ const productServices = {
       },
     }),
 
-  addImage: (id: string, data: any, token: string) =>
-    instance.put(
-      `/api/admin/products?product=${id}`,
-      { data },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    ),
+  // addImage: (id: string, data: any, token: string) =>
+  //   instance.put(
+  //     `/api/admin/products?product=${id}`,
+  //     { data },
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     }
+  //   ),
 
   updateProducts: (id: string, data: any, token: string) =>
     instance.put(`/api/admin/products?product=${id}`, data, {
