@@ -2,216 +2,246 @@ import Modal from "@/components/layouts/Modal";
 import Button from "@/components/layouts/UI/Button";
 import Input from "@/components/layouts/UI/Input";
 import Select from "@/components/layouts/UI/Select/indext";
-import { useSession } from "next-auth/react";
-import { FormEvent, useState } from "react";
 import { products } from "@/types/products.type";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import style from "./ModalAddProduct.module.scss";
+import InputFile from "@/components/layouts/UI/InputFile";
 import productServices from "@/Services/products";
+import { useSession } from "next-auth/react";
+import { uploadImage } from "@/lib/firebase/service";
 
-// Simple helper: append a new size/qty to current stock and return new array
-export function addSizeToStock(
-  currentStock?: Array<{ size: string; qty: number }>,
-  size?: string,
-  qty?: number
-) {
-  const s = (size || "").toString().trim();
-  const q = typeof qty === "number" ? qty : Number(qty) || 0;
-  const base = Array.isArray(currentStock) ? [...currentStock] : [];
-  if (!s) return base;
-  return [...base, { size: s, qty: q }];
-}
-
-type ModalUpdateUserProps = {
+type PropsType = {
   updateData: Partial<products> | null;
-  setUpdateData: (v: Partial<products> | null) => void;
-  setUserData: (data: products[]) => void;
+  setProductsData: Dispatch<SetStateAction<products[]>>;
+  setUpdateData: Dispatch<SetStateAction<Partial<products> | null>>;
   setToaster?: (
     toaster: { variant: "success" | "error"; message?: string } | null
   ) => void;
 };
 
-const ModalUpdateUser = (props: ModalUpdateUserProps) => {
-  const { updateData, setUpdateData, setUserData, setToaster } = props;
+const ModalUpdateProduct = (props: PropsType) => {
+  const { updateData, setProductsData, setUpdateData, setToaster } = props;
+  const [stockCount, setStockCount] = useState(
+    updateData?.stock || [{ size: "", qty: 0 }]
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedStockIndex, setSelectedStockIndex] = useState(0);
-  const [editQuantity, setEditQuantity] = useState<number | null>(null);
-  const [newSize, setNewSize] = useState<string>("");
-  const [newQty, setNewQty] = useState<number | "">("");
-  const session = useSession();
-  const selectedStock =
-    updateData?.stock && Array.isArray(updateData.stock)
-      ? (updateData.stock as unknown as Array<{ size: string; qty: number }>)[
-          selectedStockIndex
-        ]
-      : null;
-  const selectedQuantity = editQuantity ?? selectedStock?.qty ?? 0;
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const session: any = useSession();
 
-  const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsLoading(true);
-    const form = event.target as HTMLFormElement;
-    const nameInput = form.elements.namedItem("name") as HTMLInputElement;
-    const categoryInput = form.elements.namedItem(
-      "category"
-    ) as HTMLInputElement;
-    const descriptionInput = form.elements.namedItem(
-      "description"
-    ) as HTMLInputElement;
-
-    // Build updated stock array - only modify selected item, keep others intact
-    const updatedStock = [...(updateData?.stock || [])];
-    if (selectedStock && updatedStock[selectedStockIndex]) {
-      updatedStock[selectedStockIndex] = {
-        ...updatedStock[selectedStockIndex],
-        qty: selectedQuantity,
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    i: number,
+    field: "size" | "qty"
+  ) => {
+    setStockCount((prev) => {
+      const copy = [...prev];
+      copy[i] = {
+        ...copy[i],
+        [field]: field === "qty" ? Number(e.target.value) : e.target.value,
       };
+      return copy;
+    });
+  };
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const form = e.target as HTMLFormElement;
+
+    // Validate required fields
+    if (!form.nama.value.trim()) {
+      setToaster?.({ variant: "error", message: "Nama produk harus diisi" });
+      setIsLoading(false);
+      return;
+    }
+    if (!form.category.value.trim()) {
+      setToaster?.({ variant: "error", message: "Kategori harus diisi" });
+      setIsLoading(false);
+      return;
+    }
+    if (!form.harga.value || Number(form.harga.value) <= 0) {
+      setToaster?.({ variant: "error", message: "Harga harus lebih dari 0" });
+      setIsLoading(false);
+      return;
+    }
+    if (!uploadedImage) {
+      setToaster?.({ variant: "error", message: "Gambar harus dipilih" });
+      setIsLoading(false);
+      return;
+    }
+    if (stockCount.some((item) => !item.size || item.qty <= 0)) {
+      setToaster?.({
+        variant: "error",
+        message: "Semua size dan quantity harus diisi dengan benar",
+      });
+      setIsLoading(false);
+      return;
     }
 
-    const data: Partial<products> = {
-      name: nameInput?.value,
-      category: categoryInput?.value,
-      description: descriptionInput?.value,
-      stock: updatedStock as unknown as products["stock"],
+    // Upload image first if provided, get download URL
+    let imageUrl = "";
+    if (uploadedImage) {
+      const newName = `product.${uploadedImage.name.split(".")[1]}`;
+      imageUrl = await new Promise<string>((resolve) => {
+        uploadImage(
+          "temp",
+          uploadedImage,
+          newName,
+          "products",
+          (status: boolean, downloadURL: string) => {
+            if (!status) {
+              setToaster?.({
+                variant: "error",
+                message: "Gagal upload gambar",
+              });
+            }
+            resolve(status ? downloadURL : "");
+          }
+        );
+      });
+      if (!imageUrl) {
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    const data = {
+      name: form.nama.value,
+      category: form.category.value,
+      price: form.harga.value,
+      status: form.status.value,
+      stock: stockCount,
+      image: imageUrl,
     };
-
-    const result = await productServices.updateServices(
-      updateData?.id || "",
+    const result = await productServices.addProducts(
       data,
-      (session.data as unknown as { accessToken: string })
-        ?.accessToken as string
+      session?.data?.accessToken
     );
-
     if (result.status === 200) {
       setIsLoading(false);
-      setEditQuantity(null);
-      setSelectedStockIndex(0);
+      setProductsData((prev) => [...prev, result.data.data]);
       setUpdateData(null);
+      form.reset();
+      setUploadedImage(null);
+      setStockCount([{ size: "", qty: 0 }]);
       setToaster?.({
         variant: "success",
-        message: "Product updated successfully",
+        message: "Produk dan gambar berhasil ditambahkan",
       });
-      const response = await productServices.getAllProducts();
-      setUserData(response.data.data);
+      const { data: productsData } = await productServices.getAllProducts();
+      setProductsData(productsData.data);
     } else {
       setIsLoading(false);
       setToaster?.({
         variant: "error",
-        message: "Failed to update product",
+        message: "Gagal menambahkan produk",
       });
     }
   };
 
-  const handleAddSize = () => {
-    // Validate inputs
-    const size = (newSize || "").toString().trim();
-    const qty = typeof newQty === "number" ? newQty : Number(newQty) || 0;
-    if (!size) {
-      setToaster?.({ variant: "error", message: "Size is required" });
-      return;
-    }
-
-    // Build updated stock using helper and update local product data
-    const currentStock =
-      (updateData?.stock as unknown as Array<{ size: string; qty: number }>) ||
-      [];
-    const updatedStock = addSizeToStock(currentStock, size, qty);
-    setUpdateData({
-      ...(updateData || {}),
-      stock: updatedStock,
-    } as Partial<products>);
-
-    // Reset add inputs and notify user
-    setNewSize("");
-    setNewQty("");
-    setToaster?.({ variant: "success", message: "Size added" });
-  };
-  const sizeOptions =
-    updateData?.stock && Array.isArray(updateData.stock)
-      ? (
-          updateData.stock as unknown as Array<{ size: string; qty: number }>
-        ).map((item, idx: number) => ({
-          label: `Size ${item.size} (Qty: ${item.qty ?? 0})`,
-          value: String(idx),
-        }))
-      : [];
-
   return (
-    <Modal onClose={() => setUpdateData(null)}>
-      <h1>Update Product</h1>
-      <form onSubmit={handleRegister}>
-        <Input label="Name" name="name" deafultValue={updateData?.name} />
-        <Input
-          label="Category"
-          name="category"
-          deafultValue={updateData?.category}
-        />
-        <Input
-          label="Description"
-          name="description"
-          deafultValue={updateData?.description}
-        />
-        <Input
-          label="Price"
-          name="price"
-          type="number"
-          deafultValue={updateData?.price}
-        />
-        {sizeOptions.length > 0 && (
-          <>
-            <Select
-              label="Select Size"
-              name="stock-select"
-              value={String(selectedStockIndex)}
-              options={sizeOptions}
-              onChange={(e) => setSelectedStockIndex(Number(e.target.value))}
-            />
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-                marginTop: "10px",
-                alignItems: "center",
-              }}
+    <Modal
+      onClose={() => {
+        setUpdateData(null);
+      }}
+    >
+      <h1>Add Product</h1>
+      <div className={style.header}>
+        <form onSubmit={handleSubmit}>
+          <Input
+            label="Nama Produk"
+            name="nama"
+            type="text"
+            deafultValue={updateData?.name}
+          />
+          <Input
+            label="Kategori"
+            name="category"
+            type="text"
+            deafultValue={updateData?.category}
+          />
+          <Input
+            label="Harga Produk"
+            name="harga"
+            type="number"
+            deafultValue={updateData?.price}
+          />
+          <Select
+            label="Status"
+            name="status"
+            options={[
+              { label: "Released", value: "true" },
+              { label: "Not Release", value: "false" },
+            ]}
+            //defaultValue={updateData.status}
+          ></Select>
+          <h4>Stock</h4>
+          <div className={style.form__stockContainer}>
+            {stockCount.map(
+              (item: { size: string; qty: number }, i: number) => (
+                <div className={style.form__stock} key={i}>
+                  <div className={style.form__stock__item}>
+                    <Input
+                      label="Size"
+                      name="size"
+                      type="text"
+                      placeholder="Insert product size"
+                      onChange={(e) => {
+                        handleChange(e, i, "size");
+                      }}
+                    />
+                  </div>
+                  <div className={style.form__stock__item}>
+                    <Input
+                      label="Quantity"
+                      name="qty"
+                      type="number"
+                      placeholder="Insert product quantity"
+                      onChange={(e) => {
+                        handleChange(e, i, "qty");
+                      }}
+                    />
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+          <div className={style.form__button}>
+            <Button
+              className={style.form__button__add}
+              type="button"
+              onClick={() =>
+                setStockCount([...stockCount, { size: "", qty: 0 }])
+              }
             >
-              <Input
-                label="Size"
-                name="size"
-                value={selectedStock?.size}
-                disabled
-              />
-              <Input
-                label="Quantity"
-                name="quantity"
-                type="number"
-                value={String(selectedQuantity)}
-                onChange={(e) => setEditQuantity(Number(e.target.value))}
-              />
-              <Input
-                label="New Size"
-                name="new-size"
-                value={newSize}
-                onChange={(e) => setNewSize(e.target.value)}
-              />
-              <Input
-                label="New Quantity"
-                name="new-quantity"
-                type="number"
-                value={newQty === "" ? "" : String(newQty)}
-                onChange={(e) =>
-                  setNewQty(e.target.value === "" ? "" : Number(e.target.value))
+              Add Stock
+            </Button>
+            {stockCount.length > 1 && (
+              <Button
+                className={style.form__button__remove}
+                type="button"
+                onClick={() =>
+                  setStockCount(stockCount.slice(0, stockCount.length - 1))
                 }
-              />
-              <Button type="button" onClick={() => handleAddSize()}>
-                Add
+              >
+                Remove Stock
               </Button>
-            </div>
-          </>
-        )}
-        <Button type="submit" variant="primary">
-          {isLoading ? "Loading..." : "Update"}
-        </Button>
-      </form>
+            )}
+          </div>
+          <InputFile
+            name="image"
+            setUploadedImage={setUploadedImage}
+            uploadedImage={uploadedImage}
+          />
+          <Button
+            className={style.form__button__submit}
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading ? "Uploading..." : "Add Data"}
+          </Button>
+        </form>
+      </div>
     </Modal>
   );
 };
-
-export default ModalUpdateUser;
+export default ModalUpdateProduct;

@@ -8,6 +8,7 @@ import converIDR from "@/utils/currency";
 import ModalProductsUpdater from "./ModalProductsUpdater";
 import { listenToCollection } from "@/lib/firebase/service";
 import ModalAddProduct from "./ModalAddProduct";
+import ModalUpdateProduct from "./ModalProductsUpdater";
 
 type Propstype = {
   products: products[] | [];
@@ -128,10 +129,10 @@ const ProductAdminView = (props: Propstype) => {
         </div>
       </AdminLayout>
       {updateData && Object.keys(updateData).length > 0 && (
-        <ModalProductsUpdater
+        <ModalUpdateProduct
           updateData={updateData}
           setUpdateData={setUpdateData}
-          setUserData={setProductsData}
+          setProductsData={setProductsData}
           setToaster={setToaster}
         />
       )}
