@@ -15,6 +15,7 @@ import {
   getStorage,
   ref,
   uploadBytesResumable,
+  listAll,
 } from "firebase/storage";
 
 const firestore = getFirestore(app);
@@ -95,25 +96,28 @@ export async function deleteData(
 export async function uploadImage(
   id: string,
   image: any,
+  collection: string,
   newName: string,
-  collectionName: string,
   callback: Function
 ) {
+  // validate presence
   if (!image) return callback(false, undefined, "No file provided");
+
+  // accept only image mime types
   if (image.type && !image.type.startsWith("image/")) {
     return callback(false, undefined, "File must be an image");
   }
+
+  // limit to 1 MB
   const MAX_SIZE = 1 * 1024 * 1024; // 1MB
   if (typeof image.size === "number" && image.size > MAX_SIZE) {
     return callback(false, undefined, "File size exceeds 1MB");
   }
+
+  // proceed with upload
   try {
-    //const extIndex = (image.name || "").lastIndexOf(".");
-    //const ext = extIndex > -1 ? (image.name || "").slice(extIndex + 1) : "jpg";
-    const storageRef = ref(
-      storage,
-      `images/${collectionName}/${id}/${newName}`
-    );
+    //const newName = `${type}.${image.name.split(".")[1]}`;
+    const storageRef = ref(storage, `images/${collection}/${id}/${newName}`);
     const uploadTask = uploadBytesResumable(storageRef, image);
     uploadTask.on(
       "state_changed",
@@ -143,5 +147,33 @@ export async function uploadImage(
     console.error(err);
     const e = err as { message?: string };
     return callback(false, undefined, e.message || "Unexpected error");
+  }
+}
+
+/**
+ * Mengambil semua images dari storage berdasarkan product id
+ * @param id - Product ID
+ * @returns Array of objects containing filename dan download URL
+ */
+export async function getAllImagesFromStorage(id: string) {
+  try {
+    const folderRef = ref(storage, `images/products/${id}`);
+    const result = await listAll(folderRef);
+
+    const images = await Promise.all(
+      result.items.map(async (itemRef) => {
+        const downloadURL = await getDownloadURL(itemRef);
+        return {
+          name: itemRef.name,
+          fullPath: itemRef.fullPath,
+          url: downloadURL,
+        };
+      })
+    );
+
+    return images;
+  } catch (error) {
+    console.error("Error fetching images from storage:", error);
+    throw error;
   }
 }

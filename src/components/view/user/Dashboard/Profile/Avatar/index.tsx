@@ -30,13 +30,12 @@ const AvatarView = (props: PropsType) => {
     e.preventDefault();
     setIsLoading(true);
     const file = changeImage;
-    const newName = `profile.${file?.name.split(".")[1]}`;
     if (file) {
       uploadImage(
         profile.id as string,
         file,
-        newName,
         "users",
+        "profile",
         async (status: boolean, newImageURL?: string, message?: string) => {
           if (status) {
             const data = { image: newImageURL } as Partial<user>;
