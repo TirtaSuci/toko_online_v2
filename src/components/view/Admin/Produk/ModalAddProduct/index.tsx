@@ -9,6 +9,7 @@ import MultiInputFile from "@/components/layouts/UI/MultiInputFile";
 import productServices from "@/Services/products";
 import { useSession } from "next-auth/react";
 import { uploadImage } from "@/lib/firebase/service";
+import Image from "next/image";
 
 type PropsType = {
   setProductsData: Dispatch<SetStateAction<products[]>>;
@@ -23,7 +24,9 @@ const ModalAddProduct = (props: PropsType) => {
   const [stockCount, setStockCount] = useState([{ size: "", qty: 0 }]);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
-  const session: any = useSession();
+  const session = useSession();
+  const token = (session as unknown as { data?: { accessToken?: string } })
+    ?.data?.accessToken;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -63,7 +66,7 @@ const ModalAddProduct = (props: PropsType) => {
                 const result = await productServices.updateProducts(
                   id,
                   data,
-                  session.data?.accessToken
+                  token ?? ""
                 );
                 if (result.status === 200) {
                   uploadCount++;
@@ -153,10 +156,7 @@ const ModalAddProduct = (props: PropsType) => {
       stock: stockCount,
       image: ``,
     };
-    const result = await productServices.addProducts(
-      data,
-      session?.data?.accessToken
-    );
+    const result = await productServices.addProducts(data, token ?? "");
     if (result.status === 200) {
       await UploadImages(result.data.data.id);
     } else {
@@ -170,88 +170,148 @@ const ModalAddProduct = (props: PropsType) => {
 
   return (
     <Modal
+      className={style.wrapper}
       onClose={() => {
         setAddProduct(false);
       }}
     >
-      <h1>Add Product</h1>
+      <h2>Add Product</h2>
       <div className={style.header}>
         <form onSubmit={handleSubmit}>
-          <Input label="Nama Produk" name="nama" type="text" />
-          <Input label="Kategori" name="category" type="text" />
-          <Input label="Harga Produk" name="harga" type="number" />
-          <Select
-            label="Status"
-            name="status"
-            options={[
-              { label: "Released", value: "true" },
-              { label: "Not Release", value: "false" },
-            ]}
-          ></Select>
-          <h4>Stock</h4>
-          <div className={style.form__stockContainer}>
-            {stockCount.map(
-              (item: { size: string; qty: number }, i: number) => (
-                <div className={style.form__stock} key={i}>
-                  <div className={style.form__stock__item}>
-                    <Input
-                      label="Size"
-                      type="text"
-                      placeholder="Insert product size"
-                      value={item.size}
-                      onChange={(e) => {
-                        handleChange(e, i, "size");
-                      }}
-                    />
-                  </div>
-                  <div className={style.form__stock__item}>
-                    <Input
-                      label="Quantity"
-                      type="number"
-                      placeholder="Insert product quantity"
-                      value={String(item.qty)}
-                      onChange={(e) => {
-                        handleChange(e, i, "qty");
-                      }}
-                    />
-                  </div>
-                </div>
-              )
-            )}
+          <div className={style.form__section}>
+            <h3 className={style.form__sectionTitle}>Informasi Produk</h3>
+            <Input label="Nama Produk" name="nama" type="text" />
+            <Input label="Kategori" name="category" type="text" />
+            <Input label="Harga Produk" name="harga" type="number" />
+            <Select
+              label="Status"
+              name="status"
+              options={[
+                { label: "Released", value: "true" },
+                { label: "Not Release", value: "false" },
+              ]}
+            ></Select>
           </div>
-          <div className={style.form__button}>
-            <Button
-              className={style.form__button__add}
-              type="button"
-              onClick={() =>
-                setStockCount([...stockCount, { size: "", qty: 0 }])
-              }
-            >
-              Add Stock
-            </Button>
-            {stockCount.length > 1 && (
+
+          <div className={style.form__section}>
+            <h3 className={style.form__sectionTitle}>Stock</h3>
+            <div className={style.form__stockContainer}>
+              {stockCount.map(
+                (item: { size: string; qty: number }, i: number) => (
+                  <div className={style.form__stock} key={i}>
+                    <div className={style.form__stock__item}>
+                      <Input
+                        label="Size"
+                        type="text"
+                        placeholder="Insert product size"
+                        value={item.size}
+                        onChange={(e) => {
+                          handleChange(e, i, "size");
+                        }}
+                      />
+                    </div>
+                    <div className={style.form__stock__item}>
+                      <Input
+                        label="Quantity"
+                        type="number"
+                        placeholder="Insert product quantity"
+                        value={String(item.qty)}
+                        onChange={(e) => {
+                          handleChange(e, i, "qty");
+                        }}
+                      />
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+            <div className={style.form__button}>
               <Button
-                className={style.form__button__remove}
+                className={style.form__button__add}
                 type="button"
                 onClick={() =>
-                  setStockCount(stockCount.slice(0, stockCount.length - 1))
+                  setStockCount([...stockCount, { size: "", qty: 0 }])
                 }
               >
-                Remove Stock
+                + Add Stock
               </Button>
-            )}
+              {stockCount.length > 1 && (
+                <Button
+                  className={style.form__button__remove}
+                  type="button"
+                  onClick={() =>
+                    setStockCount(stockCount.slice(0, stockCount.length - 1))
+                  }
+                >
+                  Remove Stock
+                </Button>
+              )}
+            </div>
           </div>
-          <MultiInputFile
-            name="images"
-            setUploadedImages={setUploadedImages}
-            uploadedImages={uploadedImages}
-          />
+
+          <div className={style.form__section}>
+            <h3 className={style.form__sectionTitle}>Gambar Produk</h3>
+
+            <div className={style.form__imageSection}>
+              <div className={style.form__mainImage}>
+                <p className={style.form__label}>Preview Gambar Utama</p>
+                <div className={style.form__imageWrap}>
+                  <Image
+                    src={
+                      uploadedImages && uploadedImages.length > 0
+                        ? URL.createObjectURL(uploadedImages[0])
+                        : "/image/deafult.jpg"
+                    }
+                    alt="Preview"
+                    width={250}
+                    height={250}
+                    className={style.form__imagePreview}
+                  />
+                </div>
+              </div>
+
+              <div className={style.form__uploadHelp}>
+                <p className={style.form__label}>Upload Images</p>
+                <p className={style.form__helpText}>
+                  Cover image will be the first image
+                </p>
+                <MultiInputFile
+                  className={style.form__multiInputFile}
+                  name="images"
+                  setUploadedImages={setUploadedImages}
+                  uploadedImages={uploadedImages}
+                >
+                  <p>Click to select product images</p>
+                </MultiInputFile>
+
+                {uploadedImages.length > 0 && (
+                  <div className={style.form__thumbs}>
+                    {uploadedImages.map((f, idx) => (
+                      <div key={idx} className={style.form__thumbItem}>
+                        <Image
+                          src={URL.createObjectURL(f)}
+                          alt={`img-${idx}`}
+                          width={80}
+                          height={80}
+                          className={style.form__thumbImage}
+                        />
+                        <span className={style.form__thumbLabel}>
+                          productImage{idx + 1}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           <Button
             className={style.form__button__submit}
             type="submit"
             disabled={isLoading}
           >
-            {isLoading ? "Uploading..." : "Add Data"}
+            {isLoading ? "Uploading..." : "Add Product"}
           </Button>
         </form>
       </div>

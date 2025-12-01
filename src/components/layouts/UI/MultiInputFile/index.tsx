@@ -1,16 +1,19 @@
 import { Dispatch, SetStateAction } from "react";
 import style from "./MultiInputFile.module.scss";
 import Image from "next/image";
+import { p } from "motion/react-client";
 
 type PropsType = {
+  className?: string;
+  children?: React.ReactNode;
   uploadedImages: File[];
   name?: string;
   setUploadedImages: Dispatch<SetStateAction<File[]>>;
 };
 
 const MultiInputFile = (props: PropsType) => {
-  const { setUploadedImages, uploadedImages, name } = props;
-
+  const { className, setUploadedImages, uploadedImages, name, children } =
+    props;
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.currentTarget.files) {
@@ -24,9 +27,9 @@ const MultiInputFile = (props: PropsType) => {
   };
 
   return (
-    <div className={style.multiInputFile}>
+    <div className={`${style.multiInputFile} ${className}`}>
       <label className={style.multiInputFile__label} htmlFor={name}>
-        <p>Upload Images</p>
+        {children || <p> Upload Image</p>}
         <p>
           Max Upload Size <b>1 MB</b> per file
         </p>

@@ -171,11 +171,12 @@ const ModalProductsUpdater = (props: PropsType) => {
 
   return (
     <Modal
+      className={style.wrapper}
       onClose={() => {
         setUpdateData(null);
       }}
     >
-      <h1>Update Product</h1>
+      <h2>Update Product</h2>
       <div className={style.header}>
         <form onSubmit={handleSubmit}>
           {/* Basic Info Section */}
