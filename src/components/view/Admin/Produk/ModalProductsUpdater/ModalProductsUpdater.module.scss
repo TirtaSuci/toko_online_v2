@@ -85,6 +85,7 @@
     gap: 10px;
     margin-top: 15px;
     flex-wrap: wrap;
+    justify-content: flex-end;
 
     &__add {
       display: flex;
@@ -242,5 +243,10 @@
     color: #999;
     font-style: italic;
     margin: 20px 0;
+  }
+  &__sectionInner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
   }
 }

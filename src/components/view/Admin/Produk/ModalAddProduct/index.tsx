@@ -10,6 +10,8 @@ import productServices from "@/Services/products";
 import { useSession } from "next-auth/react";
 import { uploadImage } from "@/lib/firebase/service";
 import Image from "next/image";
+import InputFile from "@/components/layouts/UI/InputFile";
+import { div } from "motion/react-client";
 
 type PropsType = {
   setProductsData: Dispatch<SetStateAction<products[]>>;
@@ -24,6 +26,7 @@ const ModalAddProduct = (props: PropsType) => {
   const [stockCount, setStockCount] = useState([{ size: "", qty: 0 }]);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const session = useSession();
   const token = (session as unknown as { data?: { accessToken?: string } })
     ?.data?.accessToken;
@@ -82,7 +85,7 @@ const ModalAddProduct = (props: PropsType) => {
       });
 
     // Upload productImage1 and update product record with its URL
-    await processUpload(uploadedImages[0], `productImage1`, true);
+    await processUpload(uploadedImage!, `productImage1`, true);
 
     // Upload the rest (productImage2, productImage3, ...) only to storage
     for (let i = 1; i < uploadedImages.length; i++) {
@@ -180,19 +183,20 @@ const ModalAddProduct = (props: PropsType) => {
         <form onSubmit={handleSubmit}>
           <div className={style.form__section}>
             <h3 className={style.form__sectionTitle}>Informasi Produk</h3>
-            <Input label="Nama Produk" name="nama" type="text" />
-            <Input label="Kategori" name="category" type="text" />
-            <Input label="Harga Produk" name="harga" type="number" />
-            <Select
-              label="Status"
-              name="status"
-              options={[
-                { label: "Released", value: "true" },
-                { label: "Not Release", value: "false" },
-              ]}
-            ></Select>
+            <div className={style.form__sectionInner}>
+              <Input label="Nama Produk" name="nama" type="text" />
+              <Input label="Kategori" name="category" type="text" />
+              <Input label="Harga Produk" name="harga" type="number" />
+              <Select
+                label="Status"
+                name="status"
+                options={[
+                  { label: "Released", value: "true" },
+                  { label: "Not Release", value: "false" },
+                ]}
+              ></Select>
+            </div>
           </div>
-
           <div className={style.form__section}>
             <h3 className={style.form__sectionTitle}>Stock</h3>
             <div className={style.form__stockContainer}>
@@ -251,40 +255,56 @@ const ModalAddProduct = (props: PropsType) => {
 
           <div className={style.form__section}>
             <h3 className={style.form__sectionTitle}>Gambar Produk</h3>
-
             <div className={style.form__imageSection}>
               <div className={style.form__mainImage}>
-                <p className={style.form__label}>Preview Gambar Utama</p>
-                <div className={style.form__imageWrap}>
-                  <Image
-                    src={
-                      uploadedImages && uploadedImages.length > 0
-                        ? URL.createObjectURL(uploadedImages[0])
-                        : "/image/deafult.jpg"
-                    }
-                    alt="Preview"
-                    width={250}
-                    height={250}
-                    className={style.form__imagePreview}
-                  />
-                </div>
+                <p className={style.form__label}>Unggah Gambar Cover</p>
+                {uploadedImage ? (
+                  <>
+                    <div className={style.form__imageWrap}>
+                      <label htmlFor="image" className={style.form__imageLabel}>
+                        <Image
+                          src={URL.createObjectURL(uploadedImage)}
+                          alt="Preview"
+                          width={250}
+                          height={250}
+                          className={style.form__imagePreview}
+                        />
+                      </label>
+                    </div>
+                    <Button
+                      className={style.form__imageRemove}
+                      onClick={() => setUploadedImage(null)}
+                    >
+                      Hapus gambar
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <InputFile
+                      className={style.form__inputFile}
+                      name="image"
+                      setUploadedImage={setUploadedImage}
+                      uploadedImage={uploadedImage}
+                    >
+                      <p>Klik untuk unggah gambar cover</p>
+                      <p>Ukuran unggah maksimal 1 MB</p>
+                    </InputFile>
+                  </>
+                )}
               </div>
-
-              <div className={style.form__uploadHelp}>
-                <p className={style.form__label}>Upload Images</p>
-                <p className={style.form__helpText}>
-                  Cover image will be the first image
-                </p>
+              <div className={style.form__uploadHelps}>
+                <p className={style.form__label}>Unggah Gambar Konten</p>
                 <MultiInputFile
                   className={style.form__multiInputFile}
                   name="images"
                   setUploadedImages={setUploadedImages}
                   uploadedImages={uploadedImages}
                 >
-                  <p>Click to select product images</p>
+                  <p>Klik untuk unggah gambar</p>
+                  <p>Ukuran unggah maksimal 1 MB per file</p>
                 </MultiInputFile>
 
-                {uploadedImages.length > 0 && (
+                {/* {uploadedImages.length > 0 && (
                   <div className={style.form__thumbs}>
                     {uploadedImages.map((f, idx) => (
                       <div key={idx} className={style.form__thumbItem}>
@@ -301,7 +321,7 @@ const ModalAddProduct = (props: PropsType) => {
                       </div>
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </div>

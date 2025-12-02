@@ -182,32 +182,34 @@ const ModalProductsUpdater = (props: PropsType) => {
           {/* Basic Info Section */}
           <div className={style.form__section}>
             <h3 className={style.form__sectionTitle}>Informasi Produk</h3>
-            <Input
-              label="Nama Produk"
-              name="nama"
-              type="text"
-              deafultValue={updateData?.name}
-            />
-            <Input
-              label="Kategori"
-              name="category"
-              type="text"
-              deafultValue={updateData?.category}
-            />
-            <Input
-              label="Harga Produk"
-              name="harga"
-              type="number"
-              deafultValue={updateData?.price}
-            />
-            <Select
-              label="Status"
-              name="status"
-              options={[
-                { label: "Released", value: "true" },
-                { label: "Not Release", value: "false" },
-              ]}
-            />
+            <div className={style.form__sectionInner}>
+              <Input
+                label="Nama Produk"
+                name="nama"
+                type="text"
+                deafultValue={updateData.name}
+              />
+              <Input
+                label="Kategori"
+                name="category"
+                type="text"
+                deafultValue={updateData.category}
+              />
+              <Input
+                label="Harga Produk"
+                name="harga"
+                type="number"
+                deafultValue={updateData.price}
+              />
+              <Select
+                label="Status"
+                name="status"
+                options={[
+                  { label: "Released", value: "true" },
+                  { label: "Not Release", value: "false" },
+                ]}
+              ></Select>
+            </div>
           </div>
 
           {/* Stock Section */}

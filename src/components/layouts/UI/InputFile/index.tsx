@@ -2,18 +2,20 @@ import { Dispatch, SetStateAction } from "react";
 import style from "./InputFile.module.scss";
 
 type PropsType = {
+  className?: string;
   uploadedImage: File | null;
   name?: string;
+  children?: React.ReactNode;
   setUploadedImage: Dispatch<SetStateAction<File | null>>;
 };
 
 const InputFile = (props: PropsType) => {
-  const { setUploadedImage, uploadedImage, name } = props;
+  const { setUploadedImage, uploadedImage, name, className, children } = props;
   return (
-    <div className={style.inputFile}>
+    <div className={`${style.inputFile} ${className ?? ""}`}>
       <label className={style.inputFile__label} htmlFor={name}>
-        {uploadedImage?.name ? (
-          uploadedImage.name
+        {children ? (
+          children
         ) : (
           <>
             <p>Upload Image</p>
