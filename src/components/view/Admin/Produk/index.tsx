@@ -9,6 +9,7 @@ import ModalProductsUpdater from "./ModalProductsUpdater";
 import { listenToCollection } from "@/lib/firebase/service";
 import ModalAddProduct from "./ModalAddProduct";
 import ModalUpdateProduct from "./ModalProductsUpdater";
+import ModalDeleteProducts from "./ModalDeleteProducts";
 
 type Propstype = {
   products: products[] | [];
@@ -22,6 +23,8 @@ const ProductAdminView = (props: Propstype) => {
   const [updateData, setUpdateData] = useState<Partial<products> | null>(null);
   const [productsData, setProductsData] = useState<products[]>([]);
   const [addProduct, setAddProduct] = useState(false);
+  const [deletedProduct, setDeletedProduct] =
+    useState<Partial<products> | null>(null);
 
   useEffect(() => {
     // Set up real-time listener for products collection
@@ -99,7 +102,7 @@ const ProductAdminView = (props: Propstype) => {
                               className={
                                 style.Users__table__action__button__delete
                               }
-                              disabled
+                              onClick={() => setDeletedProduct(product)}
                             >
                               <i className="bx bxs-trash" />
                             </Button>
@@ -139,6 +142,14 @@ const ProductAdminView = (props: Propstype) => {
       {addProduct && (
         <ModalAddProduct
           setAddProduct={setAddProduct}
+          setProductsData={setProductsData}
+          setToaster={setToaster}
+        />
+      )}
+      {deletedProduct && (
+        <ModalDeleteProducts
+          deletedProduct={deletedProduct}
+          setDeletedProduct={setDeletedProduct}
           setProductsData={setProductsData}
           setToaster={setToaster}
         />

@@ -16,6 +16,7 @@ import {
   ref,
   uploadBytesResumable,
   listAll,
+  deleteObject,
 } from "firebase/storage";
 
 const firestore = getFirestore(app);
@@ -150,11 +151,6 @@ export async function uploadImage(
   }
 }
 
-/**
- * Mengambil semua images dari storage berdasarkan product id
- * @param id - Product ID
- * @returns Array of objects containing filename dan download URL
- */
 export async function getAllImagesFromStorage(id: string) {
   try {
     const folderRef = ref(storage, `images/products/${id}`);
@@ -175,5 +171,43 @@ export async function getAllImagesFromStorage(id: string) {
   } catch (error) {
     console.error("Error fetching images from storage:", error);
     throw error;
+  }
+}
+
+export async function deleteFile(url: string, callback: Function) {
+  const fileRef = ref(storage, url);
+  try {
+    await deleteObject(fileRef).then(() => {
+      callback(true);
+    });
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    callback(false);
+  }
+}
+
+export async function deleteMultipleFiles(
+  paths: string[],
+  callback: (successCount: number, totalCount: number) => void
+) {
+  let successCount = 0;
+  const totalCount = paths.length;
+
+  try {
+    await Promise.all(
+      paths.map(async (path) => {
+        try {
+          const fileRef = ref(storage, path);
+          await deleteObject(fileRef);
+          successCount++;
+        } catch (error) {
+          console.error(`Error deleting file at ${path}:`, error);
+        }
+      })
+    );
+    callback(successCount, totalCount);
+  } catch (error) {
+    console.error("Error deleting multiple files:", error);
+    callback(successCount, totalCount);
   }
 }

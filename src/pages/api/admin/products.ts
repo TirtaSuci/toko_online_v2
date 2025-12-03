@@ -92,45 +92,43 @@ export default async function handler(
         }
       }
     );
+  } else if (req.method === "DELETE") {
+    const { product } = req.query as { product?: string };
+    const token = req.headers.authorization?.split(" ")[1] || "";
+    try {
+      const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET || "") as
+        | JwtPayload
+        | string;
+      if (typeof decoded !== "string" && decoded.role === "admin") {
+        const success = await new Promise<boolean>((resolve) => {
+          deleteData("products", product || "", (result: boolean) =>
+            resolve(result)
+          );
+        });
+        if (success) {
+          return res.status(200).json({
+            status: true,
+            statusCode: 200,
+            message: "Success",
+          });
+        }
+        return res.status(400).json({
+          status: false,
+          statusCode: 400,
+          message: "Failed",
+        });
+      }
+      return res.status(403).json({
+        status: false,
+        statusCode: 403,
+        message: "Forbidden",
+      });
+    } catch {
+      return res.status(403).json({
+        status: false,
+        statusCode: 403,
+        message: "Forbidden",
+      });
+    }
   }
-  // } else if (req.method === "PUT") {
-  //   const { product }: any = req.query as { product?: string };
-  //   const data = req.body;
-  //   const token = req.headers.authorization?.split(" ")[1] || "";
-  //   try {
-  //     const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET || "") as
-  //       | JwtPayload
-  //       | string;
-  //     if (typeof decoded !== "string" && decoded.role === "admin") {
-  //       const success = await new Promise<boolean>((resolve) => {
-  //         updateData("products", product[0] || "", data, (result: boolean) =>
-  //           resolve(result)
-  //         );
-  //       });
-  //       if (success) {
-  //         return res.status(200).json({
-  //           status: true,
-  //           statusCode: 200,
-  //           message: "Success",
-  //         });
-  //       }
-  //       return res.status(400).json({
-  //         status: false,
-  //         statusCode: 400,
-  //         message: "Failed",
-  //       });
-  //     }
-  //     return res.status(403).json({
-  //       status: false,
-  //       statusCode: 403,
-  //       message: "Forbidden",
-  //     });
-  //   } catch {
-  //     return res.status(403).json({
-  //       status: false,
-  //       statusCode: 403,
-  //       message: "Forbidden",
-  //     });
-  //   }
-  // }
 }

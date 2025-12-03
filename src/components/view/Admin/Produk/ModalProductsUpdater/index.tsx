@@ -14,8 +14,14 @@ import style from "./ModalProductsUpdater.module.scss";
 import InputFile from "@/components/layouts/UI/InputFile";
 import productServices from "@/Services/products";
 import { useSession } from "next-auth/react";
-import { uploadImage, getAllImagesFromStorage } from "@/lib/firebase/service";
+import {
+  uploadImage,
+  getAllImagesFromStorage,
+  deleteFile,
+} from "@/lib/firebase/service";
 import Image from "next/image";
+import MultiInputFile from "@/components/layouts/UI/MultiInputFile";
+import { UpdateData } from "firebase/firestore";
 
 type PropsType = {
   updateData: Partial<products>;
@@ -34,12 +40,13 @@ const ModalProductsUpdater = (props: PropsType) => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [allImages, setAllImages] = useState<
-    Array<{ name: string; url: string }>
+    Array<{ name: string; url: string; fullPath?: string }>
   >([]);
   const [imagesLoading, setImagesLoading] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const session: any = useSession();
+  const token = session.data?.accessToken;
 
-  // Fetch all images when modal opens
   useEffect(() => {
     if (updateData?.id) {
       setImagesLoading(true);
@@ -67,47 +74,93 @@ const ModalProductsUpdater = (props: PropsType) => {
     setStockCount(newStockCount);
   };
 
-  const UploadImage = (id: string, form: any) => {
-    const file = form.image.files[0];
-    if (file) {
-      uploadImage(
-        id,
-        file,
-        "productImage1",
-        "products/image",
-        async (status: boolean, newImageURL?: string, message?: string) => {
-          if (status) {
-            const data = { image: newImageURL };
-            const result = await productServices.updateProducts(
-              id,
-              data,
-              session.data?.accessToken
-            );
-            if (result.status === 200) {
-              setIsLoading(false);
-              setUploadedImage(null);
-              form.reset();
-              setUpdateData(null);
-              const { data } = await productServices.getAllProducts();
-              setProductsData(data.data);
-              setToaster?.({
-                variant: "success",
-                message: "Produk berhasil diperbarui",
-              });
-            } else {
-              setToaster?.({ variant: "error", message: result.data.message });
-              setIsLoading(false);
+  const UploadImages = async (id: string) => {
+    if (uploadedImages.length === 0) return;
+
+    let uploadCount = 0;
+
+    const processUpload = (
+      file: File,
+      newName: string,
+      shouldUpdateProduct = false
+    ) =>
+      new Promise<void>((resolve) => {
+        uploadImage(
+          id,
+          file,
+          "products",
+          newName,
+          async (status: boolean, downloadURL: string) => {
+            if (status) {
+              if (file && shouldUpdateProduct) {
+                const data = { image: downloadURL };
+                const result = await productServices.updateProducts(
+                  id,
+                  data,
+                  token ?? ""
+                );
+                if (result.status === 200) {
+                  uploadCount++;
+                }
+              } else {
+                // For productImage2+ we only upload to storage (no product update)
+                uploadCount++;
+              }
             }
-          } else {
-            setToaster?.({
-              variant: "error",
-              message: message || "Upload failed",
-            });
-            setIsLoading(false);
+            resolve();
           }
-        }
-      );
+        );
+      });
+
+    // Upload productImage1 and update product record with its URL
+    if (uploadedImage) {
+      await processUpload(uploadedImage, `productImage1`, true);
     }
+
+    if (uploadedImages.length > 0) {
+      for (let i = 1; i < uploadedImages.length; i++) {
+        const file = uploadedImages[i];
+        // Continue numbering from existing images count
+        const nextNumber = allImages.length + i;
+        const newName = `productImage${nextNumber}`;
+        await processUpload(file, newName, false);
+      }
+    }
+
+    if (uploadCount === uploadedImages.length) {
+      setIsLoading(false);
+      setUploadedImages([]);
+      setUpdateData(null);
+      const { data: productsData } = await productServices.getAllProducts();
+      setProductsData(productsData.data);
+      setToaster?.({
+        variant: "success",
+        message: `${uploadCount} gambar berhasil ditambahkan`,
+      });
+    } else {
+      setIsLoading(false);
+      setToaster?.({
+        variant: "error",
+        message: "Beberapa gambar gagal diupload",
+      });
+    }
+  };
+
+  const isDataChanged = (form: HTMLFormElement): boolean => {
+    // Check if any field has changed
+    const hasBasicInfoChanged =
+      updateData?.name !== form.nama.value ||
+      updateData?.category !== form.category.value ||
+      String(updateData?.price) !== form.harga.value;
+
+    // Check if stock has changed
+    const hasStockChanged =
+      JSON.stringify(updateData?.stock) !== JSON.stringify(stockCount);
+
+    // Check if new images were uploaded
+    const hasNewImages = !!uploadedImage || uploadedImages.length > 0;
+
+    return hasBasicInfoChanged || hasStockChanged || hasNewImages;
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -131,11 +184,11 @@ const ModalProductsUpdater = (props: PropsType) => {
       setIsLoading(false);
       return;
     }
-    if (!uploadedImage) {
+    /*if (!uploadedImage) {
       setToaster?.({ variant: "error", message: "Gambar harus dipilih" });
       setIsLoading(false);
       return;
-    }
+    }*/
     if (stockCount.some((item) => !item.size || item.qty <= 0)) {
       setToaster?.({
         variant: "error",
@@ -145,13 +198,23 @@ const ModalProductsUpdater = (props: PropsType) => {
       return;
     }
 
+    // Check if there are any changes
+    if (!isDataChanged(form)) {
+      setIsLoading(false);
+      setToaster?.({
+        variant: "error",
+        message: "Tidak ada perubahan data untuk diupdate",
+      });
+      return;
+    }
+
     const data = {
       name: form.nama.value,
       category: form.category.value,
       price: form.harga.value,
       status: form.status.value,
       stock: stockCount,
-      image: ``,
+      image: updateData?.image,
     };
     const result = await productServices.updateProducts(
       updateData?.id || "",
@@ -159,7 +222,18 @@ const ModalProductsUpdater = (props: PropsType) => {
       session?.data?.accessToken
     );
     if (result.status === 200) {
-      UploadImage(result.data.data.id, form);
+      if (uploadedImage || uploadedImages.length > 0) {
+        UploadImages(updateData?.id || "");
+      } else {
+        setIsLoading(false);
+        setUpdateData(null);
+        const { data: productsData } = await productServices.getAllProducts();
+        setProductsData(productsData.data);
+        setToaster?.({
+          variant: "success",
+          message: "Produk berhasil diperbarui",
+        });
+      }
     } else {
       setIsLoading(false);
       setToaster?.({
@@ -169,6 +243,38 @@ const ModalProductsUpdater = (props: PropsType) => {
     }
   };
 
+  const handleDeleteImage = async (fullPath?: string, name?: string) => {
+    if (!fullPath) {
+      setToaster?.({ variant: "error", message: "Path gambar tidak tersedia" });
+      return;
+    }
+
+    const confirmed =
+      typeof window !== "undefined"
+        ? window.confirm(`Hapus gambar ${name || "ini"} ?`)
+        : true;
+    if (!confirmed) return;
+
+    setImagesLoading(true);
+    deleteFile(fullPath, async (success: boolean) => {
+      setImagesLoading(false);
+      if (success) {
+        setAllImages((prev) => prev.filter((img) => img.fullPath !== fullPath));
+        setToaster?.({
+          variant: "success",
+          message: "Gambar berhasil dihapus",
+        });
+        try {
+          const { data: productsData } = await productServices.getAllProducts();
+          setProductsData(productsData.data);
+        } catch (err) {
+          console.error("Failed to refresh products after image delete", err);
+        }
+      } else {
+        setToaster?.({ variant: "error", message: "Gagal menghapus gambar" });
+      }
+    });
+  };
   return (
     <Modal
       className={style.wrapper}
@@ -278,25 +384,48 @@ const ModalProductsUpdater = (props: PropsType) => {
             {/* Main Product Image Preview */}
             <div className={style.form__imageSection}>
               <div className={style.form__mainImage}>
-                <p className={style.form__label}>Preview Gambar Utama</p>
-                <Image
-                  src={
-                    uploadedImage
-                      ? URL.createObjectURL(uploadedImage)
-                      : updateData?.image || "/image/deafult.jpg"
-                  }
-                  alt="Main Product Image"
-                  width={250}
-                  height={250}
-                  className={style.form__imagePreview}
-                />
+                <p className={style.form__label}>Gambar Utama</p>
+                <label htmlFor="image">
+                  <Image
+                    src={
+                      uploadedImage
+                        ? URL.createObjectURL(uploadedImage)
+                        : updateData?.image || "/image/deafult.jpg"
+                    }
+                    alt="Main Product Image"
+                    width={250}
+                    height={250}
+                    className={style.form__imagePreview}
+                  />
+                </label>
+                <Button
+                  className={style.form__button__changeCover}
+                  type="button"
+                  onClick={() => {
+                    setUploadedImage(null);
+                  }}
+                >
+                  Ganti Gambar
+                </Button>
               </div>
-
               <InputFile
+                className={style.form__inputFile}
                 name="image"
-                setUploadedImage={setUploadedImage}
-                uploadedImage={uploadedImage}
+                setUploadedImage={setUploadedImage || null}
+                uploadedImage={uploadedImage || null}
               />
+              <div className={style.form__uploadHelps}>
+                <p className={style.form__label}>Unggah Gambar Konten</p>
+                <MultiInputFile
+                  className={style.form__multiInputFile}
+                  name="images"
+                  setUploadedImages={setUploadedImages}
+                  uploadedImages={uploadedImages}
+                >
+                  <p>Klik untuk unggah gambar</p>
+                  <p>Ukuran unggah maksimal 1 MB per file</p>
+                </MultiInputFile>
+              </div>
             </div>
 
             {/* All Images Gallery */}
@@ -306,16 +435,27 @@ const ModalProductsUpdater = (props: PropsType) => {
                   Semua Gambar ({allImages.length})
                 </p>
                 <div className={style.form__galleryGrid}>
-                  {allImages.map((img, index) => (
-                    <div key={index} className={style.form__galleryItem}>
-                      <Image
-                        src={img.url}
-                        alt={img.name}
-                        width={120}
-                        height={120}
-                        className={style.form__galleryImage}
-                      />
-                      <p className={style.form__galleryName}>{img.name}</p>
+                  {allImages.slice(1).map((img, index) => (
+                    <div key={index} className={style.form__galleryItemWrapper}>
+                      <div key={index} className={style.form__galleryItem}>
+                        <Image
+                          src={img.url}
+                          alt={img.name}
+                          width={120}
+                          height={120}
+                          className={style.form__galleryImage}
+                        />
+                        <p className={style.form__galleryName}>{img.name}</p>
+                      </div>
+                      <Button
+                        className={style.form__button__remove}
+                        type="button"
+                        onClick={() =>
+                          handleDeleteImage(img.fullPath, img.name)
+                        }
+                      >
+                        Hapus
+                      </Button>
                     </div>
                   ))}
                 </div>

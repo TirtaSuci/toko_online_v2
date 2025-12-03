@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import style from "./MultiInputFile.module.scss";
 import Image from "next/image";
-import { p } from "motion/react-client";
 import Button from "../Button";
 
 type PropsType = {
@@ -91,7 +90,7 @@ const MultiInputFile = (props: PropsType) => {
               </li>
             </ul>
           </div>
-          {uploadedImages.length > 5 && (
+          {uploadedImages.length > 3 && (
             <Button
               className={style.multiInputFile__removeAllBtn}
               onClick={() => setUploadedImages([])}

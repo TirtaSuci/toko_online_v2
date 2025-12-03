@@ -11,7 +11,6 @@ import { useSession } from "next-auth/react";
 import { uploadImage } from "@/lib/firebase/service";
 import Image from "next/image";
 import InputFile from "@/components/layouts/UI/InputFile";
-import { div } from "motion/react-client";
 
 type PropsType = {
   setProductsData: Dispatch<SetStateAction<products[]>>;
@@ -303,25 +302,6 @@ const ModalAddProduct = (props: PropsType) => {
                   <p>Klik untuk unggah gambar</p>
                   <p>Ukuran unggah maksimal 1 MB per file</p>
                 </MultiInputFile>
-
-                {/* {uploadedImages.length > 0 && (
-                  <div className={style.form__thumbs}>
-                    {uploadedImages.map((f, idx) => (
-                      <div key={idx} className={style.form__thumbItem}>
-                        <Image
-                          src={URL.createObjectURL(f)}
-                          alt={`img-${idx}`}
-                          width={80}
-                          height={80}
-                          className={style.form__thumbImage}
-                        />
-                        <span className={style.form__thumbLabel}>
-                          productImage{idx + 1}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )} */}
               </div>
             </div>
           </div>

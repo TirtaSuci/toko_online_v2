@@ -95,6 +95,7 @@
       border: none;
       border-radius: 6px;
       padding: 10px 15px;
+      margin-top: 10px;
       cursor: pointer;
       font-weight: 500;
       transition: background-color 0.3s ease;
@@ -117,6 +118,7 @@
       border: none;
       border-radius: 6px;
       padding: 10px 15px;
+      margin-top: 10px;
       cursor: pointer;
       font-weight: 500;
       transition: background-color 0.3s ease;
@@ -155,9 +157,15 @@
     }
   }
 
+  &__inputFile {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+  }
+
   &__imageSection {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 0.7fr 1fr;
     gap: 20px;
     align-items: start;
     margin-bottom: 20px;
@@ -201,6 +209,14 @@
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
     gap: 15px;
     margin-top: 15px;
+  }
+
+  &__galleryItemWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
   }
 
   &__galleryItem {
