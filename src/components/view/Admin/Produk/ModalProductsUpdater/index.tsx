@@ -349,6 +349,18 @@ const ModalProductsUpdater = (props: PropsType) => {
                         }}
                       />
                     </div>
+                    <Button
+                      type="button"
+                      className={style.form__button__removeStock}
+                      onClick={() => {
+                        const newStock = stockCount.filter(
+                          (_: any, index: number) => index !== i
+                        );
+                        setStockCount(newStock);
+                      }}
+                    >
+                      <i className="bx bxs-trash" />
+                    </Button>
                   </div>
                 )
               )}
@@ -376,12 +388,8 @@ const ModalProductsUpdater = (props: PropsType) => {
               )}
             </div>
           </div>
-
-          {/* Images Section */}
           <div className={style.form__section}>
             <h3 className={style.form__sectionTitle}>Gambar Produk</h3>
-
-            {/* Main Product Image Preview */}
             <div className={style.form__imageSection}>
               <div className={style.form__mainImage}>
                 <p className={style.form__label}>Gambar Utama</p>
@@ -399,7 +407,7 @@ const ModalProductsUpdater = (props: PropsType) => {
                   />
                 </label>
                 <Button
-                  className={style.form__button__changeCover}
+                  className={style.form__button__add}
                   type="button"
                   onClick={() => {
                     setUploadedImage(null);
@@ -423,16 +431,15 @@ const ModalProductsUpdater = (props: PropsType) => {
                   uploadedImages={uploadedImages}
                 >
                   <p>Klik untuk unggah gambar</p>
+                  <p>Ukuran gambar harus 1:1</p>
                   <p>Ukuran unggah maksimal 1 MB per file</p>
                 </MultiInputFile>
               </div>
             </div>
-
-            {/* All Images Gallery */}
             {allImages.length > 0 && (
               <div className={style.form__gallery}>
                 <p className={style.form__label}>
-                  Semua Gambar ({allImages.length})
+                  Gambar lainnya ({allImages.length - 1})
                 </p>
                 <div className={style.form__galleryGrid}>
                   {allImages.slice(1).map((img, index) => (
@@ -448,7 +455,7 @@ const ModalProductsUpdater = (props: PropsType) => {
                         <p className={style.form__galleryName}>{img.name}</p>
                       </div>
                       <Button
-                        className={style.form__button__remove}
+                        className={style.form__button__removeImage}
                         type="button"
                         onClick={() =>
                           handleDeleteImage(img.fullPath, img.name)
@@ -466,8 +473,6 @@ const ModalProductsUpdater = (props: PropsType) => {
               <p className={style.form__loadingText}>Memuat gambar...</p>
             )}
           </div>
-
-          {/* Submit Button */}
           <Button
             className={style.form__button__submit}
             type="submit"

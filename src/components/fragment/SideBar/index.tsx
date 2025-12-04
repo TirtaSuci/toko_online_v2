@@ -17,8 +17,11 @@ const SideBar = (props: Propstype) => {
   const { pathname } = useRouter();
   return (
     <div className={style.sideBar}>
-      <div className={style.sideBar__content}>
-        <h1 className={style.sideBar__top__title}>Admin Panel</h1>
+      <div className={style.sideBar__top}>
+        <div>
+          <h1 className={style.sideBar__top__title}>Admin Panel</h1>
+          <p className={style.sideBar__top__subtitle}>Management System</p>
+        </div>
         <div className={style.sideBar__top__lists}>
           {lists.map((list) => (
             <Link
@@ -44,6 +47,7 @@ const SideBar = (props: Propstype) => {
           onClick={() => signOut()}
           className={style.sideBar__bottom__button}
         >
+          <i className="bx bx-log-out" />
           Logout
         </Button>
       </div>

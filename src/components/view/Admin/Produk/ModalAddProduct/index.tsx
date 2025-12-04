@@ -224,6 +224,21 @@ const ModalAddProduct = (props: PropsType) => {
                         }}
                       />
                     </div>
+                    {stockCount.length > 1 && (
+                      <div className={style.form__stock__item}>
+                        <Button
+                          className={style.form__button__removeStock}
+                          type="button"
+                          onClick={() => {
+                            setStockCount(
+                              stockCount.filter((_, index) => index !== i)
+                            );
+                          }}
+                        >
+                          <i className="bx bxs-trash" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )
               )}

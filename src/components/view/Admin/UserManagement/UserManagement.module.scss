@@ -1,60 +1,103 @@
 .Users {
+  padding: 10px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 20px 0;
+    letter-spacing: -0.5px;
+  }
   &__table {
     width: 100%;
     border-spacing: 0;
     border-collapse: collapse;
     text-align: center;
-    border: 1px solid #ccc;
-    margin-top: 40px;
+    border: 1px solid #e0e0e0;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 36, 85, 0.08);
+
     th,
     td {
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
+      padding: 12px 8px;
+      border-bottom: 1px solid #9b9b9b;
     }
+
     thead {
       tr {
-        background-color: #b9b9b9;
+        background-color: #002455;
+        color: #ffffff;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.5px;
       }
     }
-    tr:nth-child(even) {
-      background-color: #ffffff;
+
+    tbody {
+      tr {
+        background-color: #ffffff;
+        transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover {
+          background-color: #f8f9fa;
+        }
+
+        &:nth-child(even) {
+          background-color: #f3f3f3;
+
+          &:hover {
+            background-color: #eff0f2;
+          }
+        }
+      }
     }
 
     &__action {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
 
       &__button {
         background-color: #000000;
         color: #ffffff;
         cursor: pointer;
         border: none;
-        border: 1px solid #000000;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 18px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         &__edit {
-          background-color: #5980d4e8;
-          border: 1px solid #5980d4e8;
-          font-size: 20px;
-        }
+          background: #4e85cd;
+          box-shadow: 0 2px 8px rgba(78, 205, 196, 0.25);
 
-        &__edit:hover {
-          background-color: #1f4596e8;
-          border: 1px solid #5980d4e8;
-          transform: 0.3s;
+          &:hover {
+            background: #2d5da4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(91, 78, 205, 0.35);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
         }
 
         &__delete {
-          background-color: #ca3030;
-          border: 1px solid #ca3030;
-          font-size: 20px;
-        }
+          background-color: #dc3545;
+          color: #ffffff;
 
-        &__delete:hover {
-          background-color: #971717;
-          border: 1px solid #ca3030;
-          transform: 0.3s;
+          &:hover {
+            background-color: #bb2d3b;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+            transform: translateY(-2px);
+          }
         }
       }
     }

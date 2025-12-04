@@ -6,6 +6,7 @@ import userServices from "@/Services/user";
 import { useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
 import { user } from "@/types/user.type";
+import style from "./ModalUpdateUser.module.scss";
 
 type ModalUpdateUserProps = {
   updateData: Partial<user> | null;
@@ -78,9 +79,7 @@ const ModalUpdateUser = (props: ModalUpdateUserProps) => {
             { label: "admin", value: "admin" },
           ]}
         ></Select>
-        <Button type="submit" variant="primary">
-          {isLoading ? "Loading..." : "Update"}
-        </Button>
+        <Button type="submit">{isLoading ? "Loading..." : "Update"}</Button>
       </form>
     </Modal>
   );

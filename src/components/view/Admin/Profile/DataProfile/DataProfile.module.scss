@@ -1,0 +1,159 @@
+.profile {
+  &__main {
+    &__details {
+      width: 100%;
+      background: linear-gradient(180deg, #f8fafc 0%, #f0f4fa 100%);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 12px 32px rgba(0, 36, 85, 0.1);
+      border: 1px solid #d0dce8;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      &__title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #002455;
+        margin: 0;
+      }
+
+      &__data {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        &__actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-top: 8px;
+        }
+
+        &__edit {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        &__button {
+          padding: 10px 14px;
+          border: none;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 14px;
+          transition: transform 0.18s ease, box-shadow 0.18s ease,
+            background-color 0.18s ease;
+          flex: 1 1 auto;
+          min-width: 100px;
+          background: #360185;
+          color: #ffffff;
+
+          &:hover {
+            background-color: #250158;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(54, 1, 133, 0.25);
+          }
+        }
+
+        /* Default button style (Edit, Cancel) */
+        button:not([data-variant]) {
+          background: transparent;
+          color: #360185;
+          border: 2px solid #360185;
+
+          &:hover {
+            background-color: #f0ebf7;
+            box-shadow: 0 4px 12px rgba(54, 1, 133, 0.15);
+          }
+        }
+      }
+
+      /* Input styling */
+      input,
+      textarea,
+      select {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1.5px solid #bcc8da;
+        background: #ffffff;
+        outline: none;
+        font-size: 14px;
+        color: #1a1a1a;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        box-shadow: 0 8px 28px rgba(45, 164, 159, 0.18);
+        border-color: #2da49f;
+        background: #fafbfc;
+      }
+
+      input:disabled,
+      textarea:disabled,
+      select:disabled {
+        background: #e8eef5;
+        color: #666;
+      }
+
+      /* Modal styles for Change Password */
+      .modalMain {
+        max-width: 320px;
+      }
+
+      .changePwModal {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .changePwModal__body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        &__input,
+        input {
+          width: 100%;
+          padding: 10px 12px;
+          border: 1.5px solid #bcc8da;
+          border-radius: 8px;
+          outline: none;
+          font-size: 14px;
+          background: #ffffff;
+          color: #1a1a1a;
+
+          &:focus {
+            box-shadow: 0 8px 28px rgba(45, 164, 159, 0.18);
+            border-color: #2da49f;
+            background: #fafbfc;
+          }
+        }
+
+        label {
+          font-size: 13px;
+          color: #444;
+          font-weight: 600;
+        }
+      }
+
+      .changePwModal__actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 12px;
+      }
+    }
+  }
+}

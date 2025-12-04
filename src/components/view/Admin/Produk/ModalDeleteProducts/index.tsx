@@ -8,6 +8,7 @@ import productServices from "@/Services/products";
 import { products } from "@/types/products.type";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import style from "./ModalDeleteProducts.module.scss";
 
 type ModalDeleteProductsProps = {
   deletedProduct: Partial<products> | null;
@@ -83,11 +84,25 @@ const ModalDeleteProducts = (props: ModalDeleteProductsProps) => {
   };
 
   return (
-    <Modal onClose={() => setDeletedProduct(null)}>
-      <h1>Are you sure</h1>
-      <Button onClick={handleDelete} disabled={isLoading}>
-        {isLoading ? "Loading..." : "Yes"}
-      </Button>
+    <Modal className={style.modal} onClose={() => setDeletedProduct(null)}>
+      <div className={style.wrapper}>
+        <h1>Are you sure</h1>
+        <div className={style.button}>
+          <Button
+            className={style.button__delete}
+            onClick={handleDelete}
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : "Yes"}
+          </Button>
+          <Button
+            className={style.button__cancel}
+            onClick={() => setDeletedProduct(null)}
+          >
+            No
+          </Button>
+        </div>
+      </div>
     </Modal>
   );
 };

@@ -1,0 +1,26 @@
+.profile {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 32px;
+  margin-top: 20px;
+  align-items: flex-start;
+  width: 100%;
+
+  &__avatar {
+    flex: 0 0 280px;
+  }
+
+  &__data {
+    flex: 1 1 auto;
+  }
+
+  @media (max-width: 880px) {
+    flex-direction: column;
+    gap: 20px;
+
+    &__avatar,
+    &__data {
+      width: 100%;
+    }
+  }
+}

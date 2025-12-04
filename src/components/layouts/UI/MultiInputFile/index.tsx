@@ -75,7 +75,10 @@ const MultiInputFile = (props: PropsType) => {
                 </li>
               ))}
               <li className={style.multiInputFile__item}>
-                <label className={style.multiInputFile__label} htmlFor={name}>
+                <label
+                  className={style.multiInputFile__label__addFile}
+                  htmlFor={name}
+                >
                   <i className="bx  bx-image-plus"></i>
                 </label>
                 <input

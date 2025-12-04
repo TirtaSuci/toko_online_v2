@@ -42,7 +42,7 @@ const ProductAdminView = (props: Propstype) => {
     <>
       <AdminLayout>
         <div className={style.Users}>
-          <h1>Users Managemen</h1>
+          <h1>Products Management</h1>
           <div className={style.Users__tableContainer}>
             <table className={style.Users__table}>
               <thead>

@@ -1,7 +1,32 @@
 .adminLayout {
   display: flex;
+  height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  overflow: hidden;
+
   &__main {
     width: 100%;
-    padding: 20px 40px;
+    padding: 30px 40px;
+    overflow-y: auto;
+    background: #ffffff;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #002455;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+
+      &:hover {
+        background: #001c3d;
+      }
+    }
   }
 }
