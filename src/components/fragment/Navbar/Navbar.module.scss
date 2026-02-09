@@ -6,6 +6,14 @@
   align-items: center;
   justify-content: flex-end;
 
+  &__container {
+    display: flex;
+
+    Button{
+      margin: 0 10px;
+    }
+  }
+
   &__button {
     margin-right: 20px;
     padding: 8px 16px;
