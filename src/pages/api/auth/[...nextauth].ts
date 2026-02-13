@@ -46,6 +46,7 @@ const authOptions: NextAuthOptions = {
       if (account?.provider === "credentials") {
         token.email = user.email;
         token.fullname = user.fullname;
+        token.name = user.fullname;
         token.role = user.role;
         token.id = user.id;
         token.image = user.image;
@@ -65,6 +66,7 @@ const authOptions: NextAuthOptions = {
         await loginWithGoogle(data, (data: any) => {
           token.email = data.email;
           token.fullname = data.fullname;
+          token.name = data.fullname;
           token.image = data.image;
           token.role = data.role;
           token.id = data.id;
@@ -75,6 +77,7 @@ const authOptions: NextAuthOptions = {
       // --- 🔹 Tambahan penting: update token saat session.update() dipanggil
       if (trigger === "update" && session?.user) {
         token.fullname = session.user.fullname;
+        token.name = session.user.name;
         token.email = session.user.email;
         token.image = session.user.image;
       }
@@ -88,6 +91,10 @@ const authOptions: NextAuthOptions = {
       }
       if ("fullname" in token) {
         session.user.fullname = token.fullname;
+      }
+      // ensure `name` is populated from fullname or token.name
+      if ("fullname" in token || "name" in token) {
+        session.user.name = token.fullname ?? token.name;
       }
       if ("image" in token) {
         session.user.image = token.image;

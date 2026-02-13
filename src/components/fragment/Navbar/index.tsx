@@ -4,25 +4,25 @@ import style from "./Navbar.module.scss";
 import Button from "@/components/layouts/UI/Button";
 
 const Navbar = () => {
-  const { data: user } = useSession();
-  const session = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
-  const role = user?.user?.role;
+  const role = session?.user?.role || "guest";
 
+  console.log("User role:", session);
   return (
     <div className={style.Navbar}>
       <div className={style.Navbar__container}>
         {role === "admin" && (
           <Button variant="secondary" onClick={() => router.push("/admin")}>
-            Admin Dashboard
+            Hi, {session?.user?.name} (Admin Dashboard)
           </Button>
         )}
         {role === "user" && (
           <Button variant="secondary" onClick={() => router.push("/user")}>
-            User Dashboard
+            Hi, {session?.user?.name} (User Dashboard)
           </Button>
         )}
-        <Button variant="secondary" onClick={() => (session ? signOut() : signIn())}>{session.data ? "Logout" : `Login`}</Button>
+        <Button variant="secondary" onClick={() => (session ? signOut() : signIn())}>{session ? "Logout" : "Login"}</Button>
       </div>
     </div>
   );
