@@ -3,6 +3,7 @@ import { products } from "@/types/products.type";
 
 const productServices = {
   getAllProducts: () => instance.get("/api/admin/products"),
+  getDetailProducts: (id: string) => instance.get(`/api/admin/products?product=${id}`),
 
   addProducts: (data: any, token: string) =>
     instance.post(`/api/admin/products`, data, {

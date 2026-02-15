@@ -2,6 +2,7 @@ import {
   addData,
   deleteData,
   retriveData,
+  retriveDataById,
   updateData,
 } from "@/lib/firebase/service";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -14,16 +15,28 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     const users = await retriveData("products");
+    console.log(users[0]);
     const data = users.map((u: Partial<user>) => {
       const restObj = { ...(u as Record<string, unknown>) };
       return restObj as Partial<user>;
     });
-    res.status(200).json({
-      status: true,
-      statusCode: 200,
-      message: "Success",
-      data,
-    });
+    if (users[0]) {
+      const data = await retriveDataById("products", users[0].id);
+      res.status(200).json({
+        status: true,
+        statusCode: 200,
+        message: "Success",
+        data,
+      });
+    } else {
+      res.status(200).json({
+        status: true,
+        statusCode: 200,
+        message: "Success",
+        data,
+      });
+    }
+
   } else if (req.method === "POST") {
     const token = req.headers.authorization?.split(" ")[1] || "";
     jwt.verify(

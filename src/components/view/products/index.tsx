@@ -1,12 +1,13 @@
 import { products } from "@/types/products.type";
 import style from "./products.module.scss";
 import Image from "next/image";
+import Link from "next/link";
 
 type PropsType = {
     products: products[];
 };
-const ProductsView = (props : PropsType) => {
-    const { products } = props; 
+const ProductsView = (props: PropsType) => {
+    const { products } = props;
     return (
         <div className={style.products}>
             <h1 className={style.products__title}>
@@ -30,16 +31,18 @@ const ProductsView = (props : PropsType) => {
                         </div>
                     </div>
                 </div>
-                 <div className={style.products__main__products}>
-                            {products.map((product, index) => (
-                                <div key={index} className={style.products__main__products__item}>
-                                    <Image src={product.image} alt={product.name} width={200} height={200} />
+                <div className={style.products__main__products}>
+                    {products.map((product) => (
+                        <Link href={`/products/${product.id}`} key={product.id}>
+                            <div className={style.products__main__products__item}>
+                                <Image src={product.image} alt={product.name} width={200} height={200} />
                                 <h1>{product.name}</h1>
                                 <p>{product.description}</p>
-                                <p>Price: ${product.price}</p>
-                                </div>
-                            ))}
-                        </div>
+                                <p>Price: Rp{product.price}</p>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </div>
     );
