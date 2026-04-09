@@ -1,15 +1,9 @@
-import LoginView from "@/components/view/auth/Login";
+import LoginView from "@/components/view/Auth/Login";
 
-const LoginPage = ({
-  setToaster,
-}: {
-  setToaster?: (
-    toaster: { variant: "success" | "error"; message?: string } | null
-  ) => void;
-}) => {
+const LoginPage = ({ }) => {
   return (
     <>
-      <LoginView setToaster={setToaster} />
+      <LoginView />
     </>
   );
 };

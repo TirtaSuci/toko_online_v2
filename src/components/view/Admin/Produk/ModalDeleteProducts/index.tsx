@@ -7,23 +7,21 @@ import {
 import productServices from "@/Services/products";
 import { products } from "@/types/products.type";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import style from "./ModalDeleteProducts.module.scss";
+import { ToasterContext } from "@/context/ToasterContexts";
 
 type ModalDeleteProductsProps = {
   deletedProduct: Partial<products> | null;
   setDeletedProduct: (v: Partial<products> | null) => void;
   setProductsData: (data: products[]) => void;
-  setToaster?: (
-    t: { variant: "success" | "error"; message?: string } | null
-  ) => void;
 };
 
 const ModalDeleteProducts = (props: ModalDeleteProductsProps) => {
-  const { deletedProduct, setDeletedProduct, setProductsData, setToaster } =
-    props;
+  const { deletedProduct, setDeletedProduct, setProductsData } = props;
   const session = useSession();
   const [isLoading, setIsLoading] = useState(false);
+  const { setToaster } = useContext(ToasterContext);
 
   const handleDelete = async () => {
     if (!deletedProduct?.id) return;
@@ -35,7 +33,7 @@ const ModalDeleteProducts = (props: ModalDeleteProductsProps) => {
     }
     setIsLoading(true);
     try {
-      const res = await productServices.deleteProduct(deletedProduct.id, token);
+      const res = await productServices.deleteProduct(deletedProduct.id);
       if (res?.status >= 200 && res?.status < 300) {
         try {
           // Fetch all images for this product from storage
@@ -48,8 +46,7 @@ const ModalDeleteProducts = (props: ModalDeleteProductsProps) => {
             // Delete all images
             deleteMultipleFiles(
               imagePaths,
-              async (successCount, totalCount) => {
-                console.log(`Deleted ${successCount}/${totalCount} images`);
+              async () => {
                 const response = await productServices.getAllProducts();
                 setProductsData(response.data.data);
               }

@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginWithGoogle, SignIn } from "@/Services/auth";
 import { compare } from "bcryptjs";
 import GoogleProvider from "next-auth/providers/google";
 import jwt from "jsonwebtoken";
+import { isAllowedEmailProvider } from "@/utils/emailValidator";
 
 const authOptions: NextAuthOptions = {
   session: {
@@ -23,14 +25,23 @@ const authOptions: NextAuthOptions = {
           email: string;
           password: string;
         };
+        if (!isAllowedEmailProvider(email)) {
+          throw new Error(
+            "Email provider tidak diizinkan. Gunakan Gmail, Yahoo, Outlook, iCloud, atau Proton."
+          );
+        }
         const user: any = await SignIn(email);
         if (user) {
           const isPasswordValid = await compare(password, user.password);
-          if (isPasswordValid) {
-            return user;
-          } else {
+          if (!isPasswordValid) {
             return null;
           }
+          if (user.emailVerified === false) {
+            throw new Error(
+              "Email belum diverifikasi. Silakan cek inbox Anda untuk link verifikasi."
+            );
+          }
+          return user;
         } else {
           return null;
         }
@@ -42,6 +53,15 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }: any) {
+      // Blokir login Google jika domain email tidak ada di whitelist
+      if (account?.provider === "google") {
+        if (!user?.email || !isAllowedEmailProvider(user.email)) {
+          return false;
+        }
+      }
+      return true;
+    },
     async jwt({ token, account, user, trigger, session }: any) {
       if (account?.provider === "credentials") {
         token.email = user.email;

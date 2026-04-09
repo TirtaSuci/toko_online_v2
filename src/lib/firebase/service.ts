@@ -39,33 +39,36 @@ export async function retriveDataById(collectionName: string, id: string) {
 
 export async function addData(
   collectionName: string,
-  data: any,
-  callback: Function
+  data: Record<string, unknown>,
+  callback: (success: boolean, result: unknown) => void
 ) {
-  await addDoc(collection(firestore, collectionName), data).then((res) => {
-    callback(true, res);
-  });
+  await addDoc(collection(firestore, collectionName), data)
+    .then((res) => {
+      callback(true, res);
+    })
+    .catch(() => {
+      callback(false, null);
+    });
 }
 
 export async function updateData(
   collectionName: string,
   id: string,
-  data: any,
+  data: Record<string, unknown>,
   callback: (success: boolean) => void
 ) {
   const docRef = doc(firestore, collectionName, id);
   try {
     await updateDoc(docRef, data);
     callback(true);
-  } catch (error) {
-    console.log(error);
+  } catch {
     callback(false);
   }
 }
 
 export function listenToCollection(
   collectionName: string,
-  callback: (data: Array<{ id: string; [key: string]: any }>) => void
+  callback: (data: Array<{ id: string; [key: string]: unknown }>) => void
 ) {
   const unsubscribe = onSnapshot(
     collection(firestore, collectionName),
@@ -96,10 +99,10 @@ export async function deleteData(
 
 export async function uploadImage(
   id: string,
-  image: any,
+  image: File,
   collection: string,
   newName: string,
-  callback: Function
+  callback: (success: boolean, downloadURL?: string, error?: string) => void
 ) {
   // validate presence
   if (!image) return callback(false, undefined, "No file provided");
@@ -117,15 +120,12 @@ export async function uploadImage(
 
   // proceed with upload
   try {
-    //const newName = `${type}.${image.name.split(".")[1]}`;
     const storageRef = ref(storage, `images/${collection}/${id}/${newName}`);
     const uploadTask = uploadBytesResumable(storageRef, image);
     uploadTask.on(
       "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
+      () => {
+        // progress tracking (intentionally unused)
       },
       (error) => {
         return callback(false, undefined, error?.message || "Upload error");
@@ -174,7 +174,7 @@ export async function getAllImagesFromStorage(id: string) {
   }
 }
 
-export async function deleteFile(url: string, callback: Function) {
+export async function deleteFile(url: string, callback: (success: boolean) => void) {
   const fileRef = ref(storage, url);
   try {
     await deleteObject(fileRef).then(() => {

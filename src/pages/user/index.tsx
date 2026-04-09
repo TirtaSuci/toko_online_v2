@@ -1,4 +1,4 @@
-import UserView from "@/components/view/user/Dashboard";
+import UserView from "@/components/view/Member/Dashboard";
 
 const AdminIndex = () => {
   return (

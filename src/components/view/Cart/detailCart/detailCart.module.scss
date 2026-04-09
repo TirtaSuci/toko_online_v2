@@ -1,0 +1,80 @@
+.CartView {
+    width: 100%;
+
+    &__title {
+        font-size: 35px;
+        font-weight: 400;
+        margin-bottom: 20px;
+    }
+
+    &__container {
+        &__item {
+            &__card {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: auto;
+                border-radius: 3px;
+                margin-bottom: 10px;
+
+                &__data {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    gap: 20px;
+
+                    &__product {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 20px;
+
+                        &__font {
+                            display: flex;
+                            flex-direction: column;
+                            font-size: 18px;
+                            gap: 5px;
+                            font-weight: 500;
+
+                            &__color {
+                                display: flex;
+                                flex-direction: column;
+                                color: #888888;
+                                gap: 5px;
+                            }
+                        }
+                    }
+                }
+
+                &__qty {
+                    width: 150px;
+                    align-items: center;
+                    justify-items: center;
+                    padding-top: 15px;
+
+                    & div {
+                        height: 30px;
+                        width: 100px;
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 10px;
+                        padding: 10px;
+                        border: 1px solid #000000;
+                        border-radius: 3px;
+                        margin-bottom: 20px;
+
+                        & i {
+                            cursor: pointer;
+                        }
+                    }
+                }
+
+                &__price {
+                    font-size: 18px;
+                    font-weight: 500;
+                }
+            }
+        }
+    }
+}

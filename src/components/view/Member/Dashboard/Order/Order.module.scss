@@ -1,0 +1,188 @@
+.Users {
+      &__orderEmpty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 32px;
+        gap: 16px;
+        padding: 24px 0;
+        background: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,36,85,0.08);
+        &__text {
+          font-size: 20px;
+          color: #dc3545;
+          font-weight: 600;
+          margin: 0;
+        }
+        &__button {
+          background: #4e85cd;
+          color: #fff;
+          font-size: 16px;
+          padding: 10px 24px;
+          border-radius: 6px;
+          margin-top: 8px;
+          font-weight: 500;
+          box-shadow: 0 2px 8px rgba(78,205,196,0.15);
+          border: none;
+          cursor: pointer;
+          transition: background 0.3s;
+          &:hover {
+            background: #2d5da4;
+          }
+        }
+      }
+    &__table__cartItem {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e0e0e0;
+      &:last-child {
+        border-bottom: none;
+      }
+      &__info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        text-align: left;
+      }
+      &__name {
+        font-weight: 600;
+        font-size: 15px;
+        color: #2c3e50;
+        margin: 0;
+      }
+      &__desc {
+        font-size: 13px;
+        color: #666;
+        margin: 0;
+        max-width: 180px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      &__qty {
+        font-size: 13px;
+        color: #007bff;
+        margin: 0;
+      }
+    }
+  padding: 10px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 20px 0;
+    letter-spacing: -0.5px;
+  }
+  &__table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 36, 85, 0.08);
+
+    th,
+    td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #9b9b9b;
+    }
+
+    thead {
+      tr {
+        background-color: #002455;
+        color: #ffffff;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    tbody {
+      tr {
+        background-color: #ffffff;
+        transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover {
+          background-color: #f8f9fa;
+        }
+
+        &:nth-child(even) {
+          background-color: #f3f3f3;
+
+          &:hover {
+            background-color: #eff0f2;
+          }
+        }
+      }
+    }
+
+    &__action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      &__button {
+        background-color: #000000;
+        color: #ffffff;
+
+        &__success {
+          background-color: #28a745;
+          color: #fff;
+          box-shadow: 0 2px 8px rgba(40, 167, 69, 0.25);
+          border: none;
+          &:hover {
+            background-color: #218838;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.35);
+            transform: translateY(-2px);
+          }
+        }
+        cursor: pointer;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 18px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &__edit {
+          background: #4e85cd;
+          box-shadow: 0 2px 8px rgba(78, 205, 196, 0.25);
+
+          &:hover {
+            background: #2d5da4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(91, 78, 205, 0.35);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+        }
+
+        &__delete {
+          background-color: #dc3545;
+          color: #ffffff;
+
+          &:hover {
+            background-color: #bb2d3b;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+  }
+}

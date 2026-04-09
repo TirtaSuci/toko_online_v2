@@ -6,7 +6,7 @@ type Propstype = {
   id?: string;
   type?: string;
   placeholder?: string;
-  deafultValue?: string | number;
+  defaultValue?: string | number;
   disabled?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value?: string | number;
@@ -19,7 +19,7 @@ const Input = (props: Propstype) => {
     id = name,
     type = "text",
     placeholder,
-    deafultValue,
+    defaultValue,
     disabled,
     onChange,
     value,
@@ -33,7 +33,7 @@ const Input = (props: Propstype) => {
         id={id}
         type={type}
         placeholder={placeholder}
-        defaultValue={deafultValue}
+        defaultValue={defaultValue}
         disabled={disabled}
         onChange={onChange}
         value={value}

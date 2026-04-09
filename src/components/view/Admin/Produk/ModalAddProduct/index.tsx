@@ -1,34 +1,30 @@
 import Modal from "@/components/layouts/Modal";
 import Button from "@/components/layouts/UI/Button";
 import Input from "@/components/layouts/UI/Input";
-import Select from "@/components/layouts/UI/Select/indext";
+import Select from "@/components/layouts/UI/Select";
 import { products } from "@/types/products.type";
-import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { Dispatch, FormEvent, SetStateAction, useContext, useState } from "react";
 import style from "./ModalAddProduct.module.scss";
 import MultiInputFile from "@/components/layouts/UI/MultiInputFile";
 import productServices from "@/Services/products";
-import { useSession } from "next-auth/react";
 import { uploadImage } from "@/lib/firebase/service";
 import Image from "next/image";
 import InputFile from "@/components/layouts/UI/InputFile";
+import { ToasterContext } from "@/context/ToasterContexts";
 
 type PropsType = {
   setProductsData: Dispatch<SetStateAction<products[]>>;
   setAddProduct: Dispatch<SetStateAction<boolean>>;
-  setToaster?: (
-    toaster: { variant: "success" | "error"; message?: string } | null
-  ) => void;
 };
 
 const ModalAddProduct = (props: PropsType) => {
-  const { setProductsData, setAddProduct, setToaster } = props;
+  const { setProductsData, setAddProduct} = props;
+  const { setToaster } = useContext(ToasterContext);  
   const [stockCount, setStockCount] = useState([{ size: "", qty: 0 }]);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const session = useSession();
-  const token = (session as unknown as { data?: { accessToken?: string } })
-    ?.data?.accessToken;
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -61,20 +57,18 @@ const ModalAddProduct = (props: PropsType) => {
           file,
           "products",
           newName,
-          async (status: boolean, downloadURL: string) => {
+          async (status: boolean, downloadURL?: string) => {
             if (status) {
               if (shouldUpdateProduct) {
                 const data = { image: downloadURL };
                 const result = await productServices.updateProducts(
                   id,
-                  data,
-                  token ?? ""
+                  data
                 );
                 if (result.status === 200) {
                   uploadCount++;
                 }
               } else {
-                // For productImage2+ we only upload to storage (no product update)
                 uploadCount++;
               }
             }
@@ -83,10 +77,8 @@ const ModalAddProduct = (props: PropsType) => {
         );
       });
 
-    // Upload productImage1 and update product record with its URL
     await processUpload(uploadedImage!, `productImage1`, true);
 
-    // Upload the rest (productImage2, productImage3, ...) only to storage
     for (let i = 1; i < uploadedImages.length; i++) {
       const file = uploadedImages[i];
       const newName = `productImage${i + 1}`;
@@ -155,10 +147,11 @@ const ModalAddProduct = (props: PropsType) => {
       category: form.category.value,
       price: form.harga.value,
       status: form.status.value,
+      description: form.description.value,
       stock: stockCount,
       image: ``,
     };
-    const result = await productServices.addProducts(data, token ?? "");
+    const result = await productServices.addProducts(data);
     if (result.status === 200) {
       await UploadImages(result.data.data.id);
     } else {
@@ -195,6 +188,14 @@ const ModalAddProduct = (props: PropsType) => {
                 ]}
               ></Select>
             </div>
+          </div>
+          <div className={style.form__section}>
+            <h3 className={style.form__sectionTitle}>Deskripsi Produk</h3>
+            <textarea
+              name="description"
+              id="description"
+              className={style.form__description}
+            ></textarea>
           </div>
           <div className={style.form__section}>
             <h3 className={style.form__sectionTitle}>Stock</h3>

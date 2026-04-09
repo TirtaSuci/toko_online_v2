@@ -1,18 +1,14 @@
 import style from "./Register.module.scss";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import { useRouter } from "next/router";
 import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
 import { authService } from "@/Services/auth";
 import AuthLayout from "@/components/layouts/AuthLayout";
+import { ToasterContext } from "@/context/ToasterContexts";
 
-const RegisterView = ({
-  setToaster,
-}: {
-  setToaster?: (
-    toaster: { variant: "success" | "error"; message?: string } | null
-  ) => void;
-}) => {
+const RegisterView = ({ }) => {
+  const { setToaster } = useContext(ToasterContext);
   const [isLoading, setIsLoading] = useState(false);
   const { push } = useRouter();
 
@@ -37,24 +33,24 @@ const RegisterView = ({
     }
 
     delete data.confirmPassword;
-
-    const result = await authService.registerAccount(data);
-
-    if (result.status === 200) {
-      form.reset();
-      setIsLoading(false);
-      setToaster?.({
-        variant: "success",
-        message: "Registration successful. Please login.",
-      });
-      push("/auth/login");
-    } else {
+    try {
+      const result = await authService.registerAccount(data);
+      if (result?.status === 200) {
+        form.reset();
+        setToaster?.({ variant: "success", message: "Registration successful. Please login." });
+        push("/auth/login");
+      } else {
+        setToaster?.({
+          variant: "error",
+          message: result?.data?.message || "Registration failed.",
+        });
+      }
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } }; message?: string };
       setToaster?.({
         variant: "error",
-        message:
-          result.data?.message || "Registration failed. Please try again.",
+        message: e.response?.data?.message || "Registration failed.",
       });
-      setIsLoading(false);
     }
   };
 

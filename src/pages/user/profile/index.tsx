@@ -1,27 +1,23 @@
-import ProfileView from "@/components/view/user/Dashboard/Profile";
+import ProfileView from "@/components/view/Member/Dashboard/Profile";
 import { useEffect, useState } from "react";
 import userService from "@/Services/user";
 import { useSession } from "next-auth/react";
 
-type PropsType = {
-  setToaster: (toaster: { variant: string; message: string }) => void;
-};
 
-const ProfilePage = ({ setToaster }: PropsType) => {
+const ProfilePage = () => {
   const [profile, setProfile] = useState<Record<string, unknown>>({});
   const session = useSession();
 
+  const getProfile = async () => {
+    const response = await userService.getProfile();
+    setProfile(response.data.data);
+  };
+
   useEffect(() => {
-    const getProfile = async () => {
-      const token = (session.data as unknown as { accessToken?: string })
-        ?.accessToken;
-      if (token && Object.keys(profile).length === 0) {
-        const response = await userService.getProfile(token);
-        setProfile(response.data.data);
-      }
-    };
-    getProfile();
-  }, [profile, session]);
+    if (session.status === "authenticated") {
+      getProfile();
+    }
+  }, [session.status]);
 
   return (
     <div>
@@ -29,7 +25,6 @@ const ProfilePage = ({ setToaster }: PropsType) => {
         profile={profile}
         setProfile={setProfile}
         session={session}
-        setToaster={setToaster}
       />
     </div>
   );

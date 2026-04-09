@@ -1,0 +1,91 @@
+.container {
+
+    .title {
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 0;
+        text-align: center;
+        color: #333;
+        margin-bottom: 25px;
+    }
+
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .radioGroup {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-top: 8px;
+
+        label {
+            font-size: 0.95rem;
+            color: #444;
+            cursor: pointer;
+
+            input {
+                margin-right: 6px;
+            }
+        }
+    }
+
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    /* ensure inputs inside this module expand to full width */
+    .form :global(input),
+    .form :global(.input) {
+        width: 100%;
+    }
+
+    .productStock__sizeOption {
+        display: flex;
+        align-items: center;
+        position: relative;
+        width: auto;
+        height: 32px;
+    }
+
+    .productStock__sizeOption input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .productStock__sizeOption label {
+        border: 1px solid #2563eb;
+        border-radius: 5px;
+        padding: 0.3rem 1rem;
+        font-size: 0.95rem;
+        background: #f4f6fa;
+        color: #2563eb;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+        min-width: 48px;
+        min-height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .productStock__sizeOption input[type="radio"]:checked+label {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+    }
+
+    .productStock__sizeOption input:disabled+label {
+        background: #e0e0e0;
+        color: #999;
+        border-color: #ccc;
+        cursor: not-allowed;
+    }
+}

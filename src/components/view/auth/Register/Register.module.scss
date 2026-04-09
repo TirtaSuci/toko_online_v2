@@ -1,40 +1,6 @@
 .register {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  &__error {
-    color: red;
-    margin-bottom: 10px;
-  }
-  &__label {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-
-  &__form {
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid;
-    padding: 20px;
-    box-shadow: 5px 10px;
-    margin-bottom: 20px;
-  }
-
   &__button {
     width: 100%;
     margin-top: 10px;
-  }
-
-  &__link {
-    a {
-      color: blue;
-      text-decoration: underline;
-      cursor: pointer;
-    }
   }
 }

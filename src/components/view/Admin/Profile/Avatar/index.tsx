@@ -1,11 +1,12 @@
 import { uploadImage } from "@/lib/firebase/service";
 import style from "./Avatar.module.scss";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import userServices from "@/Services/user";
 import Image from "next/image";
 import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
 import { user } from "@/types/user.type";
+import { ToasterContext } from "@/context/ToasterContexts";
 
 type PropsType = {
   profile: {
@@ -15,16 +16,13 @@ type PropsType = {
     fullname?: string;
   } & Record<string, unknown>;
   setProfile: (profile: Record<string, unknown>) => void;
-  session: {
-    data?: { accessToken?: string; user?: Record<string, unknown> };
-  } | null;
-  setToaster?: (toaster: { variant: string; message: string }) => void;
 };
 
 const AvatarView = (props: PropsType) => {
-  const { profile, setProfile, session, setToaster } = props;
+  const { profile, setProfile} = props;
   const [changeImage, setChangeImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { setToaster } = useContext(ToasterContext);
 
   const handleChangeAvatar = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,8 +38,7 @@ const AvatarView = (props: PropsType) => {
           if (status) {
             const data = { image: newImageURL } as Partial<user>;
             const result = await userServices.updateProfile(
-              data,
-              (session?.data?.accessToken as string) || ""
+              data
             );
             if (result.status === 200) {
               setIsLoading(false);

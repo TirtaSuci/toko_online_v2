@@ -11,6 +11,7 @@ const UserIndex = () => {
     };
     getAllUsers();
   }, []);
+
   return (
     <div>
       <UsersAdminView users={users} />

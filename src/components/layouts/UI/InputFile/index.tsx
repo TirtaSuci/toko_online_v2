@@ -10,7 +10,7 @@ type PropsType = {
 };
 
 const InputFile = (props: PropsType) => {
-  const { setUploadedImage, uploadedImage, name, className, children } = props;
+  const { setUploadedImage, name, className, children } = props;
   return (
     <div className={`${style.inputFile} ${className ?? ""}`}>
       <label className={style.inputFile__label} htmlFor={name}>
@@ -30,9 +30,9 @@ const InputFile = (props: PropsType) => {
         type="file"
         id={name}
         name={name}
-        onChange={(e: any) => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           e.preventDefault();
-          setUploadedImage(e.currentTarget.files[0]);
+          setUploadedImage(e.currentTarget.files?.[0] ?? null);
         }}
       />
     </div>

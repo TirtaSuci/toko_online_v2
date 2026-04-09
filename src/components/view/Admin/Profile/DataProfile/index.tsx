@@ -1,28 +1,25 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useContext } from "react";
 import style from "./DataProfile.module.scss";
 import userServices from "@/Services/user";
 import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
 import ResetPasswordView from "../ResetPassword";
+import { ProfileType } from "@/types/profile.type";
+import { ToasterContext } from "@/context/ToasterContexts";
 
 const DataProfileView = ({
   profile,
   setProfile,
   session,
-  setToaster,
 }: {
-  profile: any;
-  setProfile: (profile: any) => void;
-  session: any;
-  setToaster?: (toaster: {
-    variant: "success" | "error";
-    message: string;
-  }) => void;
+  profile: ProfileType;
+  setProfile: (profile: ProfileType) => void;
+  session?: { user?: { type?: string }; accessToken?: string };
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const update = (session as any)?.update;
   const [showChangePw, setShowChangePw] = useState(false);
+  const { setToaster } = useContext(ToasterContext);
 
   const handleChangeProfile = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,10 +30,7 @@ const DataProfileView = ({
       email: form.email.value,
       phone: form.phone.value,
     };
-    const result = await userServices.updateProfile(
-      data,
-      session.data?.accessToken
-    );
+    const result = await userServices.updateProfile(data);
     if (result.status === 200) {
       setIsLoading(false);
       setProfile({
@@ -44,14 +38,6 @@ const DataProfileView = ({
         fullname: data.fullname,
         email: data.email,
         phone: data.phone,
-      });
-      await update({
-        user: {
-          ...session.data.user,
-          fullname: data.fullname,
-          email: data.email,
-          phone: data.phone,
-        },
       });
       setIsEditing(false);
       form.reset();
@@ -81,28 +67,28 @@ const DataProfileView = ({
             label="Fullname"
             name="fullname"
             type="text"
-            deafultValue={profile.fullname}
+            defaultValue={profile.fullname}
             disabled={!isEditing}
           />
           <Input
             label="Email"
             name="email"
             type="email"
-            deafultValue={profile.email}
+            defaultValue={profile.email}
             disabled={!isEditing}
           />
           <Input
             label="Phone"
             name="phone"
             type="number"
-            deafultValue={profile.phone}
+            defaultValue={profile.phone}
             disabled={!isEditing}
           />
           <Input
             label="Role"
             name="role"
             type="text"
-            deafultValue={profile.role}
+            defaultValue={profile.role}
             disabled
           />
           <div className={style.profile__main__details__data__actions}>
@@ -133,7 +119,7 @@ const DataProfileView = ({
                 </Button>
               </div>
             )}
-            {(session?.user as any)?.type !== "google" && (
+            {session?.user?.type !== "google" && (
               <Button
                 type="button"
                 onClick={() => setShowChangePw(true)}
@@ -148,8 +134,7 @@ const DataProfileView = ({
           isOpen={showChangePw}
           onClose={() => setShowChangePw(false)}
           profile={profile}
-          session={session}
-          setToaster={setToaster}
+          session={session ?? { accessToken: undefined }}
         />
       </div>
     </div>

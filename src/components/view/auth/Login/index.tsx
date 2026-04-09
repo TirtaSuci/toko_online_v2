@@ -1,18 +1,15 @@
 import style from "./Login.module.scss";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import Input from "@/components/layouts/UI/Input";
 import Button from "@/components/layouts/UI/Button";
 import AuthLayout from "@/components/layouts/AuthLayout";
+import { ToasterContext } from "@/context/ToasterContexts";
+import { isAllowedEmailProvider } from "@/utils/emailValidator";
 
-const LoginView = ({
-  setToaster,
-}: {
-  setToaster?: (
-    toaster: { variant: "success" | "error"; message?: string } | null
-  ) => void;
-}) => {
+const LoginView = ({ }) => {
+  const { setToaster } = useContext(ToasterContext);
   const [isLoading, setIsloading] = useState(false);
   const [error, setError] = useState("");
   const { push, query } = useRouter();
@@ -25,10 +22,20 @@ const LoginView = ({
     setIsloading(true);
     setError("");
     const form = event.target as HTMLFormElement;
+    const emailValue = form.email.value;
+    if (!isAllowedEmailProvider(emailValue)) {
+      setIsloading(false);
+      setToaster?.({
+        variant: "error",
+        message:
+          "Email provider tidak diizinkan. Gunakan Gmail, Yahoo, Outlook, iCloud, atau Proton.",
+      });
+      return;
+    }
     try {
       const res = await signIn("credentials", {
         redirect: false,
-        email: form.email.value,
+        email: emailValue,
         password: form.password.value,
         callbackUrl,
       });
@@ -42,9 +49,13 @@ const LoginView = ({
         push(callbackUrl);
       } else {
         setIsloading(false);
+        // Tampilkan pesan asli dari authorize() jika ada (mis. domain ditolak)
+        const message = res.error.includes("Email provider")
+          ? res.error
+          : "Invalid email or password";
         setToaster?.({
           variant: "error",
-          message: "Invalid email or password",
+          message,
         });
       }
     } catch (err) {
@@ -83,7 +94,7 @@ const LoginView = ({
         variant="primary"
         className={style.login__form__google}
       >
-        <i className="bxl  bx-google bx-md" />
+        <i className="bx bxl-google" />
         Google
       </Button>
     </AuthLayout>

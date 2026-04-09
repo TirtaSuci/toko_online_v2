@@ -1,112 +1,80 @@
 import { motion } from "motion/react";
 import style from "./Toaster.module.scss";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { ToasterContext } from "@/context/ToasterContexts";
+import { ToasterType } from "@/types/toaster.type";
 
-type ToasterConfig = {
-  title: string;
-  message: string;
-  color: string;
-  barColor: string;
-  icon: string;
-};
-
-type PropsType = {
-  variant?: "success" | "error" | "info";
-  message?: string;
-  setToaster?: (config: Record<string, unknown>) => void;
-};
-
-const toasterVariants: Record<"success" | "error" | "info", ToasterConfig> = {
+const toasterVariants = {
   success: {
     title: "Success",
-    message: "Success Update Profile",
-    color: "#81C784",
-    barColor: "#16921aff",
+    defaultMessage: "Success",
+    bgColor: "#e8f5e9",
+    barColor: "#43a047",
     icon: "bx-check-circle",
   },
   error: {
     title: "Error",
-    message: "An error occurred",
-    barColor: "#ff1100ff",
-    color: "#ffbfbfff",
+    defaultMessage: "An error occurred",
+    bgColor: "#ffebee",
+    barColor: "#e53935",
     icon: "bx-x-circle",
   },
   info: {
     title: "Info",
-    message: "Here is some information",
-    barColor: "#1884ddff",
-    color: "#64B5F6",
+    defaultMessage: "Info",
+    bgColor: "#e3f2fd",
+    barColor: "#1e88e5",
     icon: "bx-info-circle",
   },
-};
+} as const;
 
-const Toaster = (props: PropsType) => {
-  const { variant = "success", message, setToaster } = props;
-  const [lengthBar, setLengthBar] = useState(100);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const startTimer = () => {
-    timerRef.current = setInterval(() => {
-      setLengthBar((prev) => prev - 0.092);
-    }, 1);
-  };
-
+const Toaster = () => {
+  const { toaster, setToaster }: ToasterType = useContext(ToasterContext);
+  const [progress, setProgress] = useState(100);
+  const duration = 4000
   useEffect(() => {
-    startTimer();
+    const start = setTimeout(() => setProgress(0), 20);
+    const hide = setTimeout(() => setToaster?.({}), duration + 50);
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      clearTimeout(start);
+      clearTimeout(hide);
     };
-  }, []);
+  }, [duration, setToaster]);
 
   useEffect(() => {
-    if (lengthBar <= 0) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      setLengthBar(0);
+    if (progress < 0) {
       setToaster?.({});
     }
-  }, [lengthBar, setToaster]);
+  }, [progress, setToaster]);
+
+  if (!toaster?.variant) return null;
+
+  const v = toasterVariants[toaster?.variant ?? "success"];
 
   return (
     <motion.div
-      className={`${style.toaster} ${style[`toaster--${variant}`]}`}
-      initial={{ opacity: 0, x: 0, y: -20, scale: 0.98 }}
-      animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 0, y: -20, scale: 0.98 }}
-      transition={{ duration: 0.25 }}
+      className={`${style.toaster} ${style[`toaster--${toaster.variant}`]}`}
     >
-      <div className={style.toaster__main}>
+      <div className={style.toaster__main} style={{ backgroundColor: v.bgColor }}>
         <div className={style.toaster__main__icon}>
-          <i
-            className={`bx ${toasterVariants[variant].icon}`}
-            onClick={() => setToaster?.({})}
-          ></i>
+          <i className={`bx ${v.icon}`} aria-hidden />
         </div>
         <div className={style.toaster__main__text}>
-          <p className={style.toaster__main__text__title}>
-            {toasterVariants[variant].title}
-          </p>
-          <p className={style.toaster__main__text__description}>
-            {message || toasterVariants[variant].message}
-          </p>
+          <p className={style.toaster__main__text__title}>{v.title}</p>
+          <p className={style.toaster__main__text__description}>{toaster.message ?? v.defaultMessage}</p>
         </div>
-        <i
-          className={`bx bx-x ${style.toaster__main__close}`}
-          onClick={() => setToaster?.({})}
-        ></i>
-        <div
-          className={`${style.toaster__main__action}`}
-          style={{ backgroundColor: toasterVariants[variant].color }}
-        >
+        <button className={style.toaster__main__close} aria-label="Close" onClick={() => setToaster?.({})}>
+          <i className="bx bx-x" />
+        </button>
+        <div className={style.toaster__main__action}>
           <div
-            style={{
-              height: "100%",
-              width: `${lengthBar}%`,
-              backgroundColor: toasterVariants[variant].barColor,
-            }}
+            className={style.toaster__main__action__bar}
+            style={{ width: `${progress}%`, backgroundColor: v.barColor, transition: `width ${duration / 1000}s linear` }}
           />
         </div>
       </div>
     </motion.div>
   );
 };
+
 export default Toaster;

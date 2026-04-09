@@ -23,6 +23,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "swiperjs.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

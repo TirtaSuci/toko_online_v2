@@ -1,26 +1,23 @@
 import Modal from "@/components/layouts/Modal";
 import Button from "@/components/layouts/UI/Button";
 import Input from "@/components/layouts/UI/Input";
-import Select from "@/components/layouts/UI/Select/indext";
+import Select from "@/components/layouts/UI/Select";
 import userServices from "@/Services/user";
-import { useSession } from "next-auth/react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import { user } from "@/types/user.type";
-import style from "./ModalUpdateUser.module.scss";
+import style from "./ModalUpdaterUser.module.scss";
+import { ToasterContext } from "@/context/ToasterContexts";
 
 type ModalUpdateUserProps = {
   updateData: Partial<user> | null;
   setUpdateData: (v: Partial<user> | null) => void;
   setUserData: (data: user[]) => void;
-  setToaster?: (
-    toaster: { variant: "success" | "error"; message?: string } | null
-  ) => void;
 };
 
 const ModalUpdateUser = (props: ModalUpdateUserProps) => {
-  const { updateData, setUpdateData, setUserData, setToaster } = props;
+  const { updateData, setUpdateData, setUserData } = props;
   const [isLoading, setIsLoading] = useState(false);
-  const session = useSession();
+  const { setToaster } = useContext(ToasterContext);
 
   const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -30,11 +27,9 @@ const ModalUpdateUser = (props: ModalUpdateUserProps) => {
     const data: Partial<user> = {
       role: roleSelect?.value,
     };
-    const result = await userServices.updateServices(
+    const result = await userServices.updateUser(
       updateData?.id || "",
-      data,
-      (session.data as unknown as { accessToken: string })
-        ?.accessToken as string
+      data
     );
 
     if (result.status === 200) {
@@ -55,19 +50,19 @@ const ModalUpdateUser = (props: ModalUpdateUserProps) => {
     }
   };
   return (
-    <Modal onClose={() => setUpdateData(null)}>
+    <Modal className={style.modalUpdate} onClose={() => setUpdateData(null)}>
       <h1>Update User</h1>
       <form onSubmit={handleRegister}>
         <Input
           label="Fullname"
           name="fullname"
-          deafultValue={updateData?.fullname}
+          defaultValue={updateData?.fullname}
           disabled
         />
         <Input
           label="Email"
           name="email"
-          deafultValue={updateData?.email}
+          defaultValue={updateData?.email}
           disabled
         />
         <Select

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   addData,
   deleteData,
@@ -6,22 +7,17 @@ import {
   updateData,
 } from "@/lib/firebase/service";
 import { NextApiRequest, NextApiResponse } from "next";
-import { user } from "@/types/user.type";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { TokenVerify } from "@/utils/tokenVerify";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method === "GET") {
-    const users = await retriveData("products");
-    console.log(users[0]);
-    const data = users.map((u: Partial<user>) => {
-      const restObj = { ...(u as Record<string, unknown>) };
-      return restObj as Partial<user>;
-    });
-    if (users[0]) {
-      const data = await retriveDataById("products", users[0].id);
+    const { products } = req.query;
+    if (products && products[0]) {
+      const data = await retriveDataById("products", products[0]);
       res.status(200).json({
         status: true,
         statusCode: 200,
@@ -29,6 +25,7 @@ export default async function handler(
         data,
       });
     } else {
+      const data = await retriveData("products");
       res.status(200).json({
         status: true,
         statusCode: 200,
@@ -36,75 +33,69 @@ export default async function handler(
         data,
       });
     }
-
   } else if (req.method === "POST") {
-    const token = req.headers.authorization?.split(" ")[1] || "";
-    jwt.verify(
-      token,
-      process.env.NEXTAUTH_SECRET || "",
-      async (err, decoded: any) => {
-        if (decoded && decoded.role === "admin") {
-          const data = req.body;
-          data.createdAt = new Date();
-          data.updatedAt = new Date();
-          data.price = parseInt(data.price);
-          data.stock.filter((item: { size: string; qty: number }) => {
-            item.qty = parseInt(item.qty as unknown as string);
-          });
-          await addData("products", data, (status: boolean, result: any) => {
-            if (status) {
-              return res.status(200).json({
-                status: true,
-                statusCode: 200,
-                message: "Success",
-                data: { id: result.id },
-              });
-            } else {
-              return res.status(400).json({
-                status: false,
-                statusCode: 400,
-                message: "Failed",
-              });
-            }
-          });
-        }
+    TokenVerify(req, res, false, async (decoded: any) => {
+      if (decoded && decoded.role === "admin") {
+        const data = req.body;
+        data.createdAt = new Date();
+        data.updatedAt = new Date();
+        data.price = parseInt(data.price);
+        data.stock.forEach((item: { size: string; qty: number }) => {
+          item.qty = parseInt(item.qty as unknown as string);
+        });
+        await addData("products", data, (status: boolean, result: any) => {
+          if (status) {
+            return res.status(200).json({
+              status: true,
+              statusCode: 200,
+              message: "Success",
+              data: { id: result.id },
+            });
+          } else {
+            return res.status(400).json({
+              status: false,
+              statusCode: 400,
+              message: "Failed",
+            });
+          }
+        });
+      } else {
+        return res.status(401).json({
+          status: false,
+          statusCode: 401,
+          message: "Unauthorized",
+        });
       }
-    );
+    });
   } else if (req.method === "PUT") {
     const { product }: any = req.query;
-    // support payload sent as { data } or as raw body
-    const data = (req.body && (req.body.data ?? req.body)) || {};
-    const token = req.headers.authorization?.split(" ")[1] || "";
-    jwt.verify(
-      token,
-      process.env.NEXTAUTH_SECRET || "",
-      async (err, decoded: any) => {
-        if (decoded && decoded.role === "admin") {
-          const productId = Array.isArray(product) ? product[0] : product || "";
-          await updateData("products", productId, data, (status: boolean) => {
-            if (status) {
-              return res.status(200).json({
-                status: true,
-                statusCode: 200,
-                message: "Success",
-              });
-            } else {
-              return res.status(400).json({
-                status: false,
-                statusCode: 400,
-                message: "Failed",
-              });
-            }
-          });
-        } else {
-          return res.status(401).json({
-            status: false,
-            statusCode: 401,
-            message: "Unauthorized",
-          });
-        }
+    const data = req.body || {};
+    TokenVerify(req, res, false, async (decoded: any) => {
+      if (decoded && decoded.role === "admin") {
+        const productId = Array.isArray(product) ? product[0] : product || "";
+        await updateData("products", productId, data, (status: boolean) => {
+          if (status) {
+            return res.status(200).json({
+              status: true,
+              statusCode: 200,
+              message: "Success",
+            });
+          } else {
+            return res.status(400).json({
+              status: false,
+              statusCode: 400,
+              message: "Failed",
+            });
+          }
+        });
+      } else {
+        return res.status(401).json({
+          status: false,
+          statusCode: 401,
+          message: "Unauthorized",
+        });
       }
-    );
+    });
   } else if (req.method === "DELETE") {
     const { product } = req.query as { product?: string };
     const token = req.headers.authorization?.split(" ")[1] || "";
@@ -115,7 +106,7 @@ export default async function handler(
       if (typeof decoded !== "string" && decoded.role === "admin") {
         const success = await new Promise<boolean>((resolve) => {
           deleteData("products", product || "", (result: boolean) =>
-            resolve(result)
+            resolve(result),
           );
         });
         if (success) {

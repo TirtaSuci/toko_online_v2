@@ -1,0 +1,69 @@
+.addressChanged {
+    width: 100%;
+
+    &__title {
+        font-size: 35px;
+        font-weight: 400;
+        margin-bottom: 20px;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 20px 0;
+        min-height: 500px;
+
+        &__item {
+            display: grid;
+            grid-template-columns:auto 90px;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #888888;
+            padding: 10px;
+            border-radius: 5px;
+
+            &--active {
+                border: 2px solid #000000;
+            }
+
+            &__data {
+                margin-left: 10px;
+
+                &__header {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 5px;
+
+                    p:first-child {
+                        font-size: 18px;
+                        color: #333333;
+                        font-weight:500;
+                    }
+
+                    p:last-child {
+                        font-size: 18px;
+                        color: #888888;
+                        font-weight:400;
+                    }
+                }
+
+                p {
+                    font-size: 14px;
+                }
+            }
+
+            Button {
+                height: 30px;
+            }
+            
+        }
+    }
+
+    &__button {
+        margin-top: 10px;
+        height: 40px;
+        width: 200px;
+        margin-left: auto;
+    }
+}

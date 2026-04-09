@@ -10,4 +10,22 @@ export type user = {
   password?: string;
   token?: string;
   type?: string;
+  transaction?: {
+    address: {
+      reciptien: string;
+      phone: string;
+      address: string;
+    };
+    cart: {
+      productId: string;
+      qty: number;
+      size: string;
+    }[];
+    order_id: string;
+    total: number;
+    status: string;
+    transaction_date: Date;
+    token: string;
+    redirect_url: string;
+  }[];
 };

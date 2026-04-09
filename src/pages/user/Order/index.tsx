@@ -1,7 +1,10 @@
-import OrderView from "@/components/view/user/Dashboard/Order";
+import OrderUserView from "@/components/view/Member/Dashboard/Order";
 
-const OrderPage = () => {
-  return <OrderView />;
+const UserIndex = () => {
+  return (
+    <div>
+      <OrderUserView />
+    </div>
+  );
 };
-
-export default OrderPage;
+export default UserIndex;

@@ -1,7 +1,7 @@
 import Modal from "@/components/layouts/Modal";
 import Button from "@/components/layouts/UI/Button";
 import Input from "@/components/layouts/UI/Input";
-import Select from "@/components/layouts/UI/Select/indext";
+import Select from "@/components/layouts/UI/Select";
 import { products } from "@/types/products.type";
 import {
   Dispatch,
@@ -9,11 +9,11 @@ import {
   SetStateAction,
   useState,
   useEffect,
+  useContext,
 } from "react";
 import style from "./ModalProductsUpdater.module.scss";
 import InputFile from "@/components/layouts/UI/InputFile";
 import productServices from "@/Services/products";
-import { useSession } from "next-auth/react";
 import {
   uploadImage,
   getAllImagesFromStorage,
@@ -21,19 +21,17 @@ import {
 } from "@/lib/firebase/service";
 import Image from "next/image";
 import MultiInputFile from "@/components/layouts/UI/MultiInputFile";
-import { UpdateData } from "firebase/firestore";
+import { ToasterContext } from "@/context/ToasterContexts";
 
 type PropsType = {
   updateData: Partial<products>;
   setProductsData: Dispatch<SetStateAction<products[]>>;
   setUpdateData: Dispatch<SetStateAction<Partial<products> | null>>;
-  setToaster?: (
-    toaster: { variant: "success" | "error"; message?: string } | null
-  ) => void;
 };
 
 const ModalProductsUpdater = (props: PropsType) => {
-  const { updateData, setProductsData, setUpdateData, setToaster } = props;
+  const { updateData, setProductsData, setUpdateData } = props;
+  const { setToaster } = useContext(ToasterContext);
   const [stockCount, setStockCount] = useState(
     updateData?.stock || [{ size: "", qty: 0 }]
   );
@@ -44,8 +42,7 @@ const ModalProductsUpdater = (props: PropsType) => {
   >([]);
   const [imagesLoading, setImagesLoading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
-  const session: any = useSession();
-  const token = session.data?.accessToken;
+
 
   useEffect(() => {
     if (updateData?.id) {
@@ -69,8 +66,12 @@ const ModalProductsUpdater = (props: PropsType) => {
     i: number,
     field: "size" | "qty"
   ) => {
-    const newStockCount: any = [...stockCount];
-    newStockCount[i][field] = e.target.value;
+    const newStockCount = [...stockCount];
+    if (field === "qty") {
+      newStockCount[i] = { ...newStockCount[i], qty: Number(e.target.value) };
+    } else {
+      newStockCount[i] = { ...newStockCount[i], size: e.target.value };
+    }
     setStockCount(newStockCount);
   };
 
@@ -90,20 +91,18 @@ const ModalProductsUpdater = (props: PropsType) => {
           file,
           "products",
           newName,
-          async (status: boolean, downloadURL: string) => {
+          async (status: boolean, downloadURL?: string) => {
             if (status) {
               if (file && shouldUpdateProduct) {
                 const data = { image: downloadURL };
                 const result = await productServices.updateProducts(
                   id,
-                  data,
-                  token ?? ""
+                  data
                 );
                 if (result.status === 200) {
                   uploadCount++;
                 }
               } else {
-                // For productImage2+ we only upload to storage (no product update)
                 uploadCount++;
               }
             }
@@ -112,7 +111,6 @@ const ModalProductsUpdater = (props: PropsType) => {
         );
       });
 
-    // Upload productImage1 and update product record with its URL
     if (uploadedImage) {
       await processUpload(uploadedImage, `productImage1`, true);
     }
@@ -120,7 +118,6 @@ const ModalProductsUpdater = (props: PropsType) => {
     if (uploadedImages.length > 0) {
       for (let i = 1; i < uploadedImages.length; i++) {
         const file = uploadedImages[i];
-        // Continue numbering from existing images count
         const nextNumber = allImages.length + i;
         const newName = `productImage${nextNumber}`;
         await processUpload(file, newName, false);
@@ -218,8 +215,7 @@ const ModalProductsUpdater = (props: PropsType) => {
     };
     const result = await productServices.updateProducts(
       updateData?.id || "",
-      data,
-      session?.data?.accessToken
+      data
     );
     if (result.status === 200) {
       if (uploadedImage || uploadedImages.length > 0) {
@@ -293,19 +289,19 @@ const ModalProductsUpdater = (props: PropsType) => {
                 label="Nama Produk"
                 name="nama"
                 type="text"
-                deafultValue={updateData.name}
+                defaultValue={updateData.name}
               />
               <Input
                 label="Kategori"
                 name="category"
                 type="text"
-                deafultValue={updateData.category}
+                defaultValue={updateData.category}
               />
               <Input
                 label="Harga Produk"
                 name="harga"
                 type="number"
-                deafultValue={updateData.price}
+                defaultValue={updateData.price}
               />
               <Select
                 label="Status"
@@ -343,7 +339,7 @@ const ModalProductsUpdater = (props: PropsType) => {
                         name="qty"
                         type="number"
                         placeholder="Insert product quantity"
-                        value={String(item.qty)}
+                        value={item.qty}
                         onChange={(e) => {
                           handleChange(e, i, "qty");
                         }}
@@ -354,7 +350,7 @@ const ModalProductsUpdater = (props: PropsType) => {
                       className={style.form__button__removeStock}
                       onClick={() => {
                         const newStock = stockCount.filter(
-                          (_: any, index: number) => index !== i
+                          (_: { size: string; qty: number }, index: number) => index !== i
                         );
                         setStockCount(newStock);
                       }}

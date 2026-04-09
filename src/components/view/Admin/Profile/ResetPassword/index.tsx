@@ -1,20 +1,17 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Modal from "@/components/layouts/Modal";
 import Button from "@/components/layouts/UI/Button";
 import Input from "@/components/layouts/UI/Input";
 import userServices from "@/Services/user";
 import style from "../DataProfile/DataProfile.module.scss";
 import type { user } from "@/types/user.type";
+import { ToasterContext } from "@/context/ToasterContexts";
 
 type ResetPasswordProps = {
   isOpen: boolean;
   onClose: () => void;
   profile: Partial<user>;
-  session: { data?: { accessToken?: string } };
-  setToaster?: (toaster: {
-    variant: "success" | "error";
-    message: string;
-  }) => void;
+  session: { accessToken?: string };
 };
 
 const ResetPasswordView = ({
@@ -22,7 +19,6 @@ const ResetPasswordView = ({
   onClose,
   profile,
   session,
-  setToaster,
 }: ResetPasswordProps) => {
   const [pwForm, setPwForm] = useState({
     oldPassword: "",
@@ -30,6 +26,7 @@ const ResetPasswordView = ({
     confirmPassword: "",
   });
   const [isPwLoading, setIsPwLoading] = useState(false);
+  const { setToaster } = useContext(ToasterContext);
 
   const handleResetPassword = async () => {
     // client-side validation
@@ -48,9 +45,12 @@ const ResetPasswordView = ({
 
     setIsPwLoading(true);
     try {
-      const token = session?.data?.accessToken;
+      const token = session?.accessToken;
       if (!token) {
-        alert("Token tidak ditemukan");
+        setToaster({
+          variant: "error",
+          message: "Token tidak ditemukan. Silakan login ulang.",
+        });
         return;
       }
       const payload = {
@@ -58,7 +58,7 @@ const ResetPasswordView = ({
         oldPassword: pwForm.oldPassword,
         newPassword: pwForm.newPassword,
       };
-      const res = await userServices.changePassword(payload, token);
+      const res = await userServices.changePassword(payload);
       if (res.status === 200) {
         onClose();
         setPwForm({
@@ -75,10 +75,10 @@ const ResetPasswordView = ({
       }
     } catch (err) {
       console.error(err);
-      const axiosErr = err as unknown as {
-        response?: { data?: { message?: string } };
-      };
-      alert(axiosErr?.response?.data?.message || "Terjadi kesalahan");
+      setToaster?.({
+        variant: "error",
+        message: "Terjadi kesalahan saat mengubah password. Silakan coba lagi.",
+      });
     } finally {
       setIsPwLoading(false);
     }
